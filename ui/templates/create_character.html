@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Character - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main class="single-column">
+            <div class="form-container">
+                <h2>Create New Character</h2>
+                
+                {% if error %}
+                    <div class="error-message">
+                        <p>{{ error }}</p>
+                    </div>
+                {% endif %}
+                
+                <form id="character-form" action="/create-character" method="post" enctype="multipart/form-data">
+                    <div class="form-section">
+                        <h3>Basic Information</h3>
+                        
+                        <div class="form-group">
+                            <label for="name">Character Name:</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="class">Character Class:</label>
+                            <input type="text" id="class" name="class" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="level">Level:</label>
+                            <input type="number" id="level" name="level" min="1" max="20" value="1" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Stats</h3>
+                        <div class="stats-grid">
+                            <div class="form-group">
+                                <label for="STR">STR:</label>
+                                <input type="number" id="STR" name="stats.STR" min="3" max="20" value="10" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="DEX">DEX:</label>
+                                <input type="number" id="DEX" name="stats.DEX" min="3" max="20" value="10" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="CON">CON:</label>
+                                <input type="number" id="CON" name="stats.CON" min="3" max="20" value="10" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="INT">INT:</label>
+                                <input type="number" id="INT" name="stats.INT" min="3" max="20" value="10" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="WIS">WIS:</label>
+                                <input type="number" id="WIS" name="stats.WIS" min="3" max="20" value="10" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="CHA">CHA:</label>
+                                <input type="number" id="CHA" name="stats.CHA" min="3" max="20" value="10" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Skills</h3>
+                        <div class="skills-grid">
+                            <div class="form-group">
+                                <label for="stealth">Stealth:</label>
+                                <input type="number" id="stealth" name="skills.stealth" min="0" max="10" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="arcana">Arcana:</label>
+                                <input type="number" id="arcana" name="skills.arcana" min="0" max="10" value="0">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="persuasion">Persuasion:</label>
+                                <input type="number" id="persuasion" name="skills.persuasion" min="0" max="10" value="0">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Abilities</h3>
+                        <div class="form-group">
+                            <label for="abilities">Abilities (comma-separated):</label>
+                            <input type="text" id="abilities" name="abilities" placeholder="Cleave, Shield Block, etc.">
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Inventory</h3>
+                        <div class="form-group">
+                            <label for="inventory">Starting Items (comma-separated):</label>
+                            <input type="text" id="inventory" name="inventory" placeholder="Sword, Shield, Potion, etc.">
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Backstory</h3>
+                        <div class="form-group">
+                            <label for="backstory">Character Backstory:</label>
+                            <textarea id="backstory" name="backstory" rows="5"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3>Character Image</h3>
+                        <div class="form-group">
+                            <label for="character-image">Upload Character Image:</label>
+                            <input type="file" id="character-image" name="character_image" accept="image/*">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="primary-button">Create Character</button>
+                        <a href="/character" class="secondary-button">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simple form validation
+        document.getElementById('character-form').addEventListener('submit', function(event) {
+            const name = document.getElementById('name').value.trim();
+            const characterClass = document.getElementById('class').value.trim();
+            
+            if (!name) {
+                alert('Please enter a character name.');
+                event.preventDefault();
+                return;
+            }
+            
+            if (!characterClass) {
+                alert('Please enter a character class.');
+                event.preventDefault();
+                return;
+            }
+        });
+    </script>
+</body>
+</html>

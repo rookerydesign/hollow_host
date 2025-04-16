@@ -1,0 +1,30 @@
+{
+  "name": "Thorne Ironheart",
+  "class_name": "Warrior",
+  "level": 1,
+  "stats": {
+    "STR": 16,
+    "DEX": 12,
+    "INT": 10,
+    "CHA": 8,
+    "WIS": 14,
+    "CON": 15
+  },
+  "skills": {
+    "stealth": 1,
+    "arcana": 0,
+    "persuasion": 0
+  },
+  "abilities": [
+    "Cleave",
+    "Shield Block"
+  ],
+  "status_effects": [],
+  "inventory": [
+    "Rusty Sword",
+    "Leather Armor",
+    "Healing Potion",
+    "Torch"
+  ],
+  "backstory": "A former soldier seeking redemption for a past failure. Thorne grew up in a small mining village and joined the local militia to protect his home. After a tragic incident where he failed to save his fellow soldiers from a surprise attack, he left his village in shame and now wanders the land, seeking to prove his worth and find redemption through heroic deeds."
+}

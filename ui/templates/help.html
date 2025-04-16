@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <div class="help-content">
+                <h2>Game Help</h2>
+                
+                <section class="help-section">
+                    <h3>Available Commands</h3>
+                    <table class="commands-table">
+                        <thead>
+                            <tr>
+                                <th>Command</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for command, description in commands %}
+                                <tr>
+                                    <td><code>{{ command }}</code></td>
+                                    <td>{{ description }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </section>
+                
+                <section class="help-section">
+                    <h3>How to Play</h3>
+                    <p>Hollow Host is an AI-powered text adventure game. You interact with the game by typing commands or actions, and the AI Dungeon Master responds with descriptions of what happens.</p>
+                    <p>You can type natural language commands like "I search the room" or "I talk to the innkeeper", or use specific commands like "/roll" to perform dice rolls.</p>
+                </section>
+                
+                <section class="help-section">
+                    <h3>Dice Rolls</h3>
+                    <p>To roll dice, use the <code>/roll</code> command followed by the dice notation. For example:</p>
+                    <ul>
+                        <li><code>/roll 1d20</code> - Roll a 20-sided die</li>
+                        <li><code>/roll 2d6</code> - Roll two 6-sided dice</li>
+                        <li><code>/roll 1d20+STR</code> - Roll a 20-sided die and add your Strength modifier</li>
+                    </ul>
+                </section>
+                
+                <section class="help-section">
+                    <h3>Character Stats</h3>
+                    <p>Your character has six primary stats that affect various actions:</p>
+                    <ul>
+                        <li><strong>STR (Strength):</strong> Physical power, melee attacks, lifting</li>
+                        <li><strong>DEX (Dexterity):</strong> Agility, reflexes, stealth, ranged attacks</li>
+                        <li><strong>CON (Constitution):</strong> Health, stamina, resistance to poison</li>
+                        <li><strong>INT (Intelligence):</strong> Knowledge, memory, arcane magic</li>
+                        <li><strong>WIS (Wisdom):</strong> Perception, intuition, divine magic</li>
+                        <li><strong>CHA (Charisma):</strong> Personality, leadership, persuasion</li>
+                    </ul>
+                </section>
+                
+                <section class="help-section">
+                    <h3>About Hollow Host</h3>
+                    <p>Hollow Host is a modular solo/multiplayer text-based RPG system powered by a local LLM via LM Studio. The AI serves as the Dungeon Master (DM), enabling immersive tabletop-style RPGs through natural language, character systems, and rule-based gameplay.</p>
+                </section>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+</body>
+</html>

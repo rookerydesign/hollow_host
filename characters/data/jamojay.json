@@ -1,0 +1,36 @@
+{
+  "name": "jamojay",
+  "class_name": "Mystic Rogue",
+  "level": 1,
+  "stats": {
+    "STR": 9,
+    "DEX": 15,
+    "INT": 14,
+    "CHA": 13,
+    "WIS": 12,
+    "CON": 12
+  },
+  "skills": {
+    "stealth": 1,
+    "arcana": 1,
+    "persuasion": 1
+  },
+  "abilities": [
+    "deception",
+    "intimidation",
+    "performance",
+    "perception",
+    "nature",
+    "animal handling",
+    "acrobatics"
+  ],
+  "status_effects": [],
+  "inventory": [
+    "Simple bow",
+    "short sword",
+    "simple leather armor",
+    "workers boots"
+  ],
+  "backstory": "Gutter snipe, former street urchin turned thief with knowledge of the arcane arts as well as stealth and rogue abilities.",
+  "image_path": null
+}

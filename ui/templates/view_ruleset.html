@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Ruleset - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .yaml-content {
+            background-color: #f5f5f5;
+            padding: 1rem;
+            border-radius: 5px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .ruleset-section {
+            margin-bottom: 2rem;
+        }
+        
+        .ruleset-section h3 {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .ruleset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .ruleset-item {
+            background-color: #f9f9f9;
+            padding: 0.75rem;
+            border-radius: 5px;
+            border: 1px solid #eee;
+        }
+        
+        .ruleset-item h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .tab-button {
+            padding: 0.5rem 1rem;
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            cursor: pointer;
+            margin-right: 0.25rem;
+        }
+        
+        .tab-button.active {
+            background-color: #fff;
+            font-weight: bold;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 0 5px 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/ruleset-builder">Rulesets</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main class="single-column">
+            <div class="ruleset-view">
+                <h2>{{ ruleset.name }}</h2>
+                <p class="ruleset-description">{{ ruleset.description }}</p>
+                <p class="ruleset-meta">Version: {{ ruleset.version }}</p>
+                
+                <div class="ruleset-actions">
+                    <a href="/download-ruleset/{{ filepath }}" class="primary-button">Download</a>
+                    <a href="/ruleset-builder" class="secondary-button">Back to Ruleset Builder</a>
+                </div>
+                
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="formatted">Formatted View</button>
+                    <button class="tab-button" data-tab="yaml">YAML Source</button>
+                </div>
+                
+                <div class="tab-content active" id="formatted-tab">
+                    <div class="ruleset-section">
+                        <h3>Skill Checks</h3>
+                        <div class="ruleset-grid">
+                            {% for skill, formula in ruleset.checks.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ skill|title }}</h4>
+                                    <p>{{ formula }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="ruleset-section">
+                        <h3>Combat Rules</h3>
+                        
+                        <h4>Basic Combat</h4>
+                        <div class="ruleset-grid">
+                            <div class="ruleset-item">
+                                <h4>Initiative</h4>
+                                <p>{{ ruleset.combat.initiative }}</p>
+                            </div>
+                            <div class="ruleset-item">
+                                <h4>Melee Attack</h4>
+                                <p>{{ ruleset.combat.melee_attack }}</p>
+                            </div>
+                            <div class="ruleset-item">
+                                <h4>Ranged Attack</h4>
+                                <p>{{ ruleset.combat.ranged_attack }}</p>
+                            </div>
+                            <div class="ruleset-item">
+                                <h4>Spell Attack</h4>
+                                <p>{{ ruleset.combat.spell_attack }}</p>
+                            </div>
+                        </div>
+                        
+                        <h4>Damage</h4>
+                        <div class="ruleset-grid">
+                            {% for weapon, formula in ruleset.combat.damage.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ weapon|replace('_', ' ')|title }}</h4>
+                                    <p>{{ formula }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <h4>Defense</h4>
+                        <div class="ruleset-grid">
+                            {% for key, value in ruleset.combat.defense.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ key|replace('_', ' ')|title }}</h4>
+                                    <p>{{ value }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <h4>Critical Hits</h4>
+                        <div class="ruleset-grid">
+                            {% for key, value in ruleset.combat.critical.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ key|replace('_', ' ')|title }}</h4>
+                                    <p>{{ value }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="ruleset-section">
+                        <h3>Status Effects</h3>
+                        <div class="ruleset-grid">
+                            {% for name, effect in ruleset.status_effects.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ name|title }}</h4>
+                                    <p><strong>Effect:</strong> {{ effect.effect }}</p>
+                                    <p><strong>Duration:</strong> {{ effect.duration }}</p>
+                                    {% if effect.removal %}
+                                        <p><strong>Removal:</strong> {{ effect.removal }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="ruleset-section">
+                        <h3>Difficulty Classes</h3>
+                        <div class="ruleset-grid">
+                            {% for difficulty, value in ruleset.difficulty_classes.items() %}
+                                <div class="ruleset-item">
+                                    <h4>{{ difficulty|replace('_', ' ')|title }}</h4>
+                                    <p>DC {{ value }}</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    {% if ruleset.experience %}
+                        <div class="ruleset-section">
+                            <h3>Experience and Leveling</h3>
+                            
+                            {% if ruleset.experience.level_thresholds %}
+                                <h4>Level Thresholds</h4>
+                                <div class="ruleset-grid">
+                                    {% for level, xp in ruleset.experience.level_thresholds.items() %}
+                                        <div class="ruleset-item">
+                                            <h4>Level {{ level }}</h4>
+                                            <p>{{ xp }} XP</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            
+                            {% if ruleset.experience.xp_awards %}
+                                <h4>XP Awards</h4>
+                                <div class="ruleset-grid">
+                                    {% for type, amount in ruleset.experience.xp_awards.items() %}
+                                        <div class="ruleset-item">
+                                            <h4>{{ type|replace('_', ' ')|title }}</h4>
+                                            <p>{{ amount }} XP</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if ruleset.custom_rules %}
+                        <div class="ruleset-section">
+                            <h3>Custom Rules</h3>
+                            <div class="ruleset-grid">
+                                {% for rule_name, rule_data in ruleset.custom_rules.items() %}
+                                    <div class="ruleset-item">
+                                        <h4>{{ rule_name|replace('_', ' ')|title }}</h4>
+                                        {% for key, value in rule_data.items() %}
+                                            <p><strong>{{ key|replace('_', ' ')|title }}:</strong> {{ value }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="tab-content" id="yaml-tab">
+                    <div class="yaml-content">{{ yaml_content }}</div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Deactivate all buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Activate the clicked button
+                button.classList.add('active');
+                
+                // Show the corresponding tab content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

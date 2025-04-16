@@ -1,0 +1,129 @@
+# Base Ruleset Template for Hollow Host
+# This file defines the core rules for skill checks, combat, and status effects.
+# You can customize this template or create your own ruleset.
+
+ruleset:
+  # Name and description of the ruleset
+  name: "Basic Fantasy Ruleset"
+  description: "A simple fantasy ruleset with D20-based mechanics"
+  version: "1.0"
+  
+  # Skill checks - format: "skill_name": "dice_expression + stat"
+  # These define how skill checks are calculated
+  checks:
+    # Basic skills
+    stealth: "1d20 + DEX"
+    persuasion: "1d20 + CHA"
+    arcana: "1d20 + INT"
+    athletics: "1d20 + STR"
+    perception: "1d20 + WIS"
+    survival: "1d20 + WIS"
+    medicine: "1d20 + WIS"
+    investigation: "1d20 + INT"
+    intimidation: "1d20 + CHA"
+    deception: "1d20 + CHA"
+    
+    # You can add more custom skills here
+    # custom_skill: "dice_expression + stat"
+  
+  # Combat rules - defines attack rolls, damage, and other combat mechanics
+  combat:
+    # Initiative determines turn order
+    initiative: "1d20 + DEX"
+    
+    # Attack rolls
+    melee_attack: "1d20 + STR"
+    ranged_attack: "1d20 + DEX"
+    spell_attack: "1d20 + INT"
+    
+    # Damage rolls by weapon type
+    damage:
+      unarmed: "1d4 + STR"
+      light_weapon: "1d6 + DEX"
+      medium_weapon: "1d8 + STR"
+      heavy_weapon: "2d6 + STR"
+      ranged_weapon: "1d8 + DEX"
+      spell: "1d10 + INT"
+    
+    # Defense values
+    defense:
+      base_armor_class: 10
+      armor_bonus: "DEX"  # Stat used for armor bonus
+      shield_bonus: 2     # Bonus for using a shield
+    
+    # Action economy - what actions are available each turn
+    actions:
+      standard: true      # Main action (attack, cast spell, etc.)
+      move: true          # Movement action
+      bonus: true         # Quick action
+      reaction: true      # Action outside of turn
+    
+    # Critical hits
+    critical:
+      threshold: 20       # Natural roll needed for critical hit
+      multiplier: 2       # Damage multiplier on critical hit
+  
+  # Status effects - defines various conditions and their effects
+  status_effects:
+    poisoned:
+      effect: "-2 to all checks"
+      duration: "3 turns"
+      removal: "medicine check DC 15"
+    
+    stunned:
+      effect: "cannot take actions"
+      duration: "1 turn"
+      removal: "automatic at end of turn"
+    
+    blessed:
+      effect: "+1 to attack rolls"
+      duration: "until end of session"
+      removal: "dispel magic"
+    
+    # You can add more status effects here
+    # custom_effect:
+    #   effect: "description of effect"
+    #   duration: "how long it lasts"
+    #   removal: "how to remove it"
+  
+  # Difficulty classes - standard DCs for various challenges
+  difficulty_classes:
+    very_easy: 5
+    easy: 10
+    medium: 15
+    hard: 20
+    very_hard: 25
+    nearly_impossible: 30
+  
+  # Experience and leveling
+  experience:
+    level_thresholds:
+      2: 300
+      3: 900
+      4: 2700
+      5: 6500
+      # Add more levels as needed
+    
+    # XP awards
+    xp_awards:
+      easy_encounter: 100
+      medium_encounter: 200
+      hard_encounter: 400
+      quest_completion: 500
+  
+  # Optional: Custom rules specific to your game
+  custom_rules:
+    # Example: Special rule for critical failures
+    critical_failure:
+      enabled: true
+      threshold: 1
+      effect: "weapon breaks or spell backfires"
+    
+    # Example: Flanking bonus in combat
+    flanking:
+      enabled: true
+      bonus: "+2 to attack rolls"
+    
+    # Add your own custom rules here
+    # custom_rule_name:
+    #   parameters and effects

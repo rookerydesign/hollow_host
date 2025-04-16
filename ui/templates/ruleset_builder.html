@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ruleset Builder - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/ruleset-builder">Rulesets</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main class="single-column">
+            <div class="form-container">
+                <h2>Ruleset Builder</h2>
+                
+                {% if error %}
+                    <div class="error-message">
+                        <p>{{ error }}</p>
+                    </div>
+                {% endif %}
+                
+                {% if success %}
+                    <div class="success-message">
+                        <p>{{ success }}</p>
+                    </div>
+                {% endif %}
+                
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="builder">Builder</button>
+                    <button class="tab-button" data-tab="upload">Upload YAML</button>
+                    <button class="tab-button" data-tab="manage">Manage Rulesets</button>
+                </div>
+                
+                <div class="tab-content active" id="builder-tab">
+                    <form id="ruleset-form" action="/create-ruleset" method="post">
+                        <div class="form-section">
+                            <h3>Basic Information</h3>
+                            
+                            <div class="form-group">
+                                <label for="ruleset-name">Ruleset Name:</label>
+                                <input type="text" id="ruleset-name" name="name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ruleset-description">Description:</label>
+                                <textarea id="ruleset-description" name="description" rows="2" required></textarea>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ruleset-version">Version:</label>
+                                <input type="text" id="ruleset-version" name="version" value="1.0" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="template-base">Base Template:</label>
+                                <select id="template-base" name="template_base">
+                                    <option value="base_rules">Basic Fantasy Ruleset</option>
+                                    {% for template in templates %}
+                                        <option value="{{ template.filepath }}">{{ template.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Skill Checks</h3>
+                            <p class="help-text">Define how skill checks are calculated (format: "1d20 + STAT")</p>
+                            
+                            <div class="skill-checks-container">
+                                <div class="skill-check-row">
+                                    <div class="form-group">
+                                        <label for="skill-stealth">Stealth:</label>
+                                        <input type="text" id="skill-stealth" name="checks.stealth" value="1d20 + DEX">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="skill-persuasion">Persuasion:</label>
+                                        <input type="text" id="skill-persuasion" name="checks.persuasion" value="1d20 + CHA">
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-check-row">
+                                    <div class="form-group">
+                                        <label for="skill-arcana">Arcana:</label>
+                                        <input type="text" id="skill-arcana" name="checks.arcana" value="1d20 + INT">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="skill-athletics">Athletics:</label>
+                                        <input type="text" id="skill-athletics" name="checks.athletics" value="1d20 + STR">
+                                    </div>
+                                </div>
+                                
+                                <div class="skill-check-row">
+                                    <div class="form-group">
+                                        <label for="skill-perception">Perception:</label>
+                                        <input type="text" id="skill-perception" name="checks.perception" value="1d20 + WIS">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="skill-survival">Survival:</label>
+                                        <input type="text" id="skill-survival" name="checks.survival" value="1d20 + WIS">
+                                    </div>
+                                </div>
+                                
+                                <div class="custom-skill-checks">
+                                    <h4>Custom Skills</h4>
+                                    <div id="custom-skills-container">
+                                        <!-- Custom skills will be added here -->
+                                    </div>
+                                    <button type="button" id="add-skill" class="secondary-button">Add Custom Skill</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Combat Rules</h3>
+                            
+                            <div class="form-group">
+                                <label for="initiative">Initiative:</label>
+                                <input type="text" id="initiative" name="combat.initiative" value="1d20 + DEX">
+                            </div>
+                            
+                            <div class="combat-row">
+                                <div class="form-group">
+                                    <label for="melee-attack">Melee Attack:</label>
+                                    <input type="text" id="melee-attack" name="combat.melee_attack" value="1d20 + STR">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="ranged-attack">Ranged Attack:</label>
+                                    <input type="text" id="ranged-attack" name="combat.ranged_attack" value="1d20 + DEX">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="spell-attack">Spell Attack:</label>
+                                    <input type="text" id="spell-attack" name="combat.spell_attack" value="1d20 + INT">
+                                </div>
+                            </div>
+                            
+                            <h4>Damage Formulas</h4>
+                            <div class="damage-row">
+                                <div class="form-group">
+                                    <label for="damage-unarmed">Unarmed:</label>
+                                    <input type="text" id="damage-unarmed" name="combat.damage.unarmed" value="1d4 + STR">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="damage-light">Light Weapon:</label>
+                                    <input type="text" id="damage-light" name="combat.damage.light_weapon" value="1d6 + DEX">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="damage-medium">Medium Weapon:</label>
+                                    <input type="text" id="damage-medium" name="combat.damage.medium_weapon" value="1d8 + STR">
+                                </div>
+                            </div>
+                            
+                            <div class="damage-row">
+                                <div class="form-group">
+                                    <label for="damage-heavy">Heavy Weapon:</label>
+                                    <input type="text" id="damage-heavy" name="combat.damage.heavy_weapon" value="2d6 + STR">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="damage-ranged">Ranged Weapon:</label>
+                                    <input type="text" id="damage-ranged" name="combat.damage.ranged_weapon" value="1d8 + DEX">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="damage-spell">Spell:</label>
+                                    <input type="text" id="damage-spell" name="combat.damage.spell" value="1d10 + INT">
+                                </div>
+                            </div>
+                            
+                            <h4>Defense Values</h4>
+                            <div class="defense-row">
+                                <div class="form-group">
+                                    <label for="base-ac">Base Armor Class:</label>
+                                    <input type="number" id="base-ac" name="combat.defense.base_armor_class" value="10">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="armor-bonus">Armor Bonus Stat:</label>
+                                    <select id="armor-bonus" name="combat.defense.armor_bonus">
+                                        <option value="DEX">DEX</option>
+                                        <option value="STR">STR</option>
+                                        <option value="CON">CON</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="shield-bonus">Shield Bonus:</label>
+                                    <input type="number" id="shield-bonus" name="combat.defense.shield_bonus" value="2">
+                                </div>
+                            </div>
+                            
+                            <h4>Critical Hits</h4>
+                            <div class="critical-row">
+                                <div class="form-group">
+                                    <label for="crit-threshold">Critical Threshold:</label>
+                                    <input type="number" id="crit-threshold" name="combat.critical.threshold" value="20" min="1" max="20">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="crit-multiplier">Damage Multiplier:</label>
+                                    <input type="number" id="crit-multiplier" name="combat.critical.multiplier" value="2" min="1" max="5">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Status Effects</h3>
+                            <div id="status-effects-container">
+                                <div class="status-effect">
+                                    <div class="form-group">
+                                        <label for="status-poisoned-name">Effect Name:</label>
+                                        <input type="text" id="status-poisoned-name" name="status_effects[0].name" value="poisoned">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="status-poisoned-effect">Effect Description:</label>
+                                        <input type="text" id="status-poisoned-effect" name="status_effects[0].effect" value="-2 to all checks">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="status-poisoned-duration">Duration:</label>
+                                        <input type="text" id="status-poisoned-duration" name="status_effects[0].duration" value="3 turns">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="status-poisoned-removal">Removal Condition:</label>
+                                        <input type="text" id="status-poisoned-removal" name="status_effects[0].removal" value="medicine check DC 15">
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" id="add-status-effect" class="secondary-button">Add Status Effect</button>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>Difficulty Classes</h3>
+                            <div class="difficulty-row">
+                                <div class="form-group">
+                                    <label for="dc-very-easy">Very Easy:</label>
+                                    <input type="number" id="dc-very-easy" name="difficulty_classes.very_easy" value="5" min="1" max="30">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dc-easy">Easy:</label>
+                                    <input type="number" id="dc-easy" name="difficulty_classes.easy" value="10" min="1" max="30">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dc-medium">Medium:</label>
+                                    <input type="number" id="dc-medium" name="difficulty_classes.medium" value="15" min="1" max="30">
+                                </div>
+                            </div>
+                            
+                            <div class="difficulty-row">
+                                <div class="form-group">
+                                    <label for="dc-hard">Hard:</label>
+                                    <input type="number" id="dc-hard" name="difficulty_classes.hard" value="20" min="1" max="30">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dc-very-hard">Very Hard:</label>
+                                    <input type="number" id="dc-very-hard" name="difficulty_classes.very_hard" value="25" min="1" max="30">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dc-nearly-impossible">Nearly Impossible:</label>
+                                    <input type="number" id="dc-nearly-impossible" name="difficulty_classes.nearly_impossible" value="30" min="1" max="30">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="primary-button">Create Ruleset</button>
+                            <button type="reset" class="secondary-button">Reset</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="tab-content" id="upload-tab">
+                    <form id="upload-form" action="/upload-ruleset" method="post" enctype="multipart/form-data">
+                        <div class="form-section">
+                            <h3>Upload YAML Ruleset</h3>
+                            <p class="help-text">Upload a YAML file containing your custom ruleset.</p>
+                            
+                            <div class="form-group">
+                                <label for="ruleset-file">Ruleset File:</label>
+                                <input type="file" id="ruleset-file" name="ruleset_file" accept=".yaml,.yml" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="ruleset-type">Ruleset Type:</label>
+                                <select id="ruleset-type" name="ruleset_type">
+                                    <option value="custom">Custom Ruleset</option>
+                                    <option value="template">Template Ruleset</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="primary-button">Upload Ruleset</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="tab-content" id="manage-tab">
+                    <div class="form-section">
+                        <h3>Available Rulesets</h3>
+                        
+                        <div class="ruleset-list">
+                            {% if rulesets %}
+                                {% for ruleset in rulesets %}
+                                    <div class="ruleset-item">
+                                        <div class="ruleset-info">
+                                            <h4>{{ ruleset.name }}</h4>
+                                            <p>{{ ruleset.description }}</p>
+                                            <p class="ruleset-meta">Version: {{ ruleset.version }} | Type: {{ ruleset.type }}</p>
+                                        </div>
+                                        <div class="ruleset-actions">
+                                            <a href="/view-ruleset/{{ ruleset.filepath }}" class="action-button">View</a>
+                                            <a href="/download-ruleset/{{ ruleset.filepath }}" class="action-button">Download</a>
+                                            <a href="/delete-ruleset/{{ ruleset.filepath }}" class="action-button delete" onclick="return confirm('Are you sure you want to delete this ruleset?')">Delete</a>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p>No rulesets available.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Tab switching
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Hide all tab contents
+                document.querySelectorAll('.tab-content').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                
+                // Deactivate all buttons
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Activate the clicked button
+                button.classList.add('active');
+                
+                // Show the corresponding tab content
+                const tabId = button.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Add custom skill
+        let skillCount = 0;
+        document.getElementById('add-skill').addEventListener('click', () => {
+            const container = document.getElementById('custom-skills-container');
+            skillCount++;
+            
+            const skillRow = document.createElement('div');
+            skillRow.className = 'skill-check-row custom-skill';
+            skillRow.innerHTML = `
+                <div class="form-group">
+                    <label for="custom-skill-name-${skillCount}">Skill Name:</label>
+                    <input type="text" id="custom-skill-name-${skillCount}" name="custom_skills[${skillCount}].name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="custom-skill-formula-${skillCount}">Formula:</label>
+                    <input type="text" id="custom-skill-formula-${skillCount}" name="custom_skills[${skillCount}].formula" value="1d20 + " required>
+                </div>
+                
+                <button type="button" class="remove-button" onclick="this.parentElement.remove()">✕</button>
+            `;
+            
+            container.appendChild(skillRow);
+        });
+        
+        // Add status effect
+        let statusEffectCount = 1; // Start at 1 because we already have poisoned
+        document.getElementById('add-status-effect').addEventListener('click', () => {
+            const container = document.getElementById('status-effects-container');
+            
+            const statusEffect = document.createElement('div');
+            statusEffect.className = 'status-effect';
+            statusEffect.innerHTML = `
+                <div class="form-group">
+                    <label for="status-name-${statusEffectCount}">Effect Name:</label>
+                    <input type="text" id="status-name-${statusEffectCount}" name="status_effects[${statusEffectCount}].name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status-effect-${statusEffectCount}">Effect Description:</label>
+                    <input type="text" id="status-effect-${statusEffectCount}" name="status_effects[${statusEffectCount}].effect" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status-duration-${statusEffectCount}">Duration:</label>
+                    <input type="text" id="status-duration-${statusEffectCount}" name="status_effects[${statusEffectCount}].duration" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status-removal-${statusEffectCount}">Removal Condition:</label>
+                    <input type="text" id="status-removal-${statusEffectCount}" name="status_effects[${statusEffectCount}].removal">
+                </div>
+                
+                <button type="button" class="remove-button" onclick="this.parentElement.remove()">✕</button>
+            `;
+            
+            container.appendChild(statusEffect);
+            statusEffectCount++;
+        });
+    </script>
+</body>
+</html>

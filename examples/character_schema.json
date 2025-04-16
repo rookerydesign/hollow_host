@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Character",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "class": { "type": "string" },
+    "level": { "type": "integer" },
+    "stats": {
+      "type": "object",
+      "properties": {
+        "STR": { "type": "integer" },
+        "DEX": { "type": "integer" },
+        "INT": { "type": "integer" },
+        "CHA": { "type": "integer" },
+        "WIS": { "type": "integer" },
+        "CON": { "type": "integer" }
+      },
+      "required": ["STR", "DEX", "INT", "CHA", "WIS", "CON"]
+    },
+    "skills": {
+      "type": "object",
+      "properties": {
+        "stealth": { "type": "integer" },
+        "arcana": { "type": "integer" },
+        "persuasion": { "type": "integer" }
+      }
+    },
+    "abilities": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "status_effects": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "inventory": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "backstory": { "type": "string" }
+  },
+  "required": ["name", "class", "level", "stats", "abilities", "status_effects", "inventory"]
+}

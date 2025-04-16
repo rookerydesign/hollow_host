@@ -1,0 +1,16 @@
+project/
+├── characters/
+├── docs/
+├── examples/
+│   ├── character.json
+│   └── sample_rules.yaml
+├── game/
+├── llm/
+├── media/
+├── narrative/
+├── sessions/
+├── templates/
+│   └── prompt_template.txt
+├── ui/
+├── world/
+└── .roo.toml

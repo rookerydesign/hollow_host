@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Combat - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <h2>Combat</h2>
+            
+            {% if combat_state.active %}
+                <div class="turn-indicator">
+                    Round {{ combat_state.round }} - {{ combat_state.current_turn }}'s Turn
+                </div>
+                
+                <div class="combat-area">
+                    <div class="combat-main">
+                        <div class="combat-log">
+                            {% for entry in combat_state.log %}
+                                <div class="combat-log-entry {% if 'attack' in entry.lower() %}attack{% elif 'success' in entry.lower() %}success{% elif 'fail' in entry.lower() or 'miss' in entry.lower() %}failure{% else %}info{% endif %}">
+                                    {{ entry }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if combat_state.is_player_turn %}
+                            <div class="action-panel">
+                                <h3>Actions</h3>
+                                <div class="action-buttons">
+                                    <button class="action-button attack" data-action="attack">Attack</button>
+                                    <button class="action-button move" data-action="move">Move</button>
+                                    <button class="action-button bonus" data-action="bonus">Bonus Action</button>
+                                    <button class="action-button reaction" data-action="reaction">Reaction</button>
+                                </div>
+                                
+                                <div id="attack-options" class="action-options" style="display: none;">
+                                    <h4>Attack Options</h4>
+                                    <div class="action-buttons">
+                                        <button class="action-button" data-attack-type="melee">Melee Attack</button>
+                                        <button class="action-button" data-attack-type="ranged">Ranged Attack</button>
+                                        <button class="action-button" data-attack-type="spell">Spell Attack</button>
+                                    </div>
+                                    
+                                    <h4>Target</h4>
+                                    <div class="action-buttons target-buttons">
+                                        {% for participant in combat_state.participants %}
+                                            {% if not participant.is_player and participant.hp > 0 %}
+                                                <button class="action-button" data-target="{{ loop.index0 }}">{{ participant.name }}</button>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                
+                                <div id="move-options" class="action-options" style="display: none;">
+                                    <h4>Movement Options</h4>
+                                    <p>Movement not implemented in this version.</p>
+                                </div>
+                                
+                                <div id="bonus-options" class="action-options" style="display: none;">
+                                    <h4>Bonus Action Options</h4>
+                                    <p>Bonus actions not implemented in this version.</p>
+                                </div>
+                                
+                                <div id="reaction-options" class="action-options" style="display: none;">
+                                    <h4>Reaction Options</h4>
+                                    <p>Reactions not implemented in this version.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="dice-roll" id="dice-roll" style="display: none;">
+                                <h3>Dice Roll</h3>
+                                <div class="dice-result" id="dice-result">20</div>
+                                <div class="dice-breakdown" id="dice-breakdown">1d20 (20) + 5 = 25</div>
+                            </div>
+                        {% else %}
+                            <div class="waiting-message">
+                                <p>Waiting for {{ combat_state.current_turn }} to act...</p>
+                                <button id="npc-action" class="primary-button">Resolve NPC Action</button>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="combat-actions">
+                            <button id="end-turn" class="secondary-button">End Turn</button>
+                            <button id="end-combat" class="secondary-button">End Combat</button>
+                        </div>
+                    </div>
+                    
+                    <div class="combat-sidebar">
+                        <h3>Participants</h3>
+                        <div class="participants-list">
+                            {% for participant in combat_state.participants %}
+                                <div class="participant {% if participant.name == combat_state.current_turn %}active{% endif %}">
+                                    <div class="participant-info">
+                                        <div class="participant-name">{{ participant.name }}</div>
+                                        <div class="participant-meta">
+                                            {% if participant.is_player %}Player{% else %}NPC{% endif %} | 
+                                            Initiative: {{ participant.initiative }}
+                                        </div>
+                                        <div class="hp-info">
+                                            HP: {{ participant.hp }}/{{ participant.max_hp }}
+                                            <div class="hp-bar">
+                                                {% set hp_percent = (participant.hp / participant.max_hp) * 100 %}
+                                                {% set width_class = "w-" ~ ((hp_percent // 5) * 5) %}
+                                                <div class="hp-bar-fill {{ width_class }} {% if hp_percent < 25 %}low{% elif hp_percent < 50 %}medium{% endif %}"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        {% if participant.status_effects %}
+                                            <div class="status-effects">
+                                                {% for effect in participant.status_effects %}
+                                                    <span class="status-effect {% if effect in ['poisoned', 'stunned', 'frightened'] %}negative{% else %}positive{% endif %}">
+                                                        {{ effect }}
+                                                    </span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="combat-setup">
+                    <h3>Start Combat</h3>
+                    <p>No active combat. Start a new combat encounter?</p>
+                    
+                    <form id="start-combat-form" action="/start-combat" method="post">
+                        <div class="form-section">
+                            <h4>Enemies</h4>
+                            <div id="enemies-container">
+                                <div class="enemy-entry">
+                                    <div class="form-group">
+                                        <label for="enemy-name-0">Name:</label>
+                                        <input type="text" id="enemy-name-0" name="enemies[0].name" value="Goblin" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="enemy-hp-0">HP:</label>
+                                        <input type="number" id="enemy-hp-0" name="enemies[0].hp" value="7" min="1" required>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="enemy-ac-0">Defense:</label>
+                                        <input type="number" id="enemy-ac-0" name="enemies[0].defense" value="12" min="1" required>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="add-enemy" class="secondary-button">Add Enemy</button>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="primary-button">Start Combat</button>
+                        </div>
+                    </form>
+                </div>
+            {% endif %}
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Action button handling
+        document.querySelectorAll('.action-button[data-action]').forEach(button => {
+            button.addEventListener('click', () => {
+                // Hide all action options
+                document.querySelectorAll('.action-options').forEach(options => {
+                    options.style.display = 'none';
+                });
+                
+                // Show the selected action options
+                const action = button.getAttribute('data-action');
+                const optionsElement = document.getElementById(`${action}-options`);
+                if (optionsElement) {
+                    optionsElement.style.display = 'block';
+                }
+            });
+        });
+        
+        // Attack handling
+        document.querySelectorAll('.action-button[data-attack-type]').forEach(button => {
+            button.addEventListener('click', () => {
+                const attackType = button.getAttribute('data-attack-type');
+                
+                // Store the attack type for when a target is selected
+                window.selectedAttackType = attackType;
+                
+                // Highlight the selected attack type
+                document.querySelectorAll('.action-button[data-attack-type]').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            });
+        });
+        
+        // Target selection
+        document.querySelectorAll('.action-button[data-target]').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetIndex = button.getAttribute('data-target');
+                const attackType = window.selectedAttackType || 'melee';
+                
+                // Show dice roll animation
+                const diceRoll = document.getElementById('dice-roll');
+                if (diceRoll) {
+                    diceRoll.style.display = 'block';
+                    
+                    // Simulate dice roll (in a real implementation, this would call the server)
+                    const roll = Math.floor(Math.random() * 20) + 1;
+                    const modifier = 5; // This would come from the character
+                    const total = roll + modifier;
+                    
+                    document.getElementById('dice-result').textContent = total;
+                    document.getElementById('dice-breakdown').textContent = `1d20 (${roll}) + ${modifier} = ${total}`;
+                    
+                    // In a real implementation, this would send the attack to the server
+                    console.log(`Attacking target ${targetIndex} with ${attackType} attack`);
+                }
+            });
+        });
+        
+        // End turn button
+        const endTurnButton = document.getElementById('end-turn');
+        if (endTurnButton) {
+            endTurnButton.addEventListener('click', () => {
+                // In a real implementation, this would call the server to end the turn
+                console.log('Ending turn');
+            });
+        }
+        
+        // End combat button
+        const endCombatButton = document.getElementById('end-combat');
+        if (endCombatButton) {
+            endCombatButton.addEventListener('click', () => {
+                if (confirm('Are you sure you want to end combat?')) {
+                    // In a real implementation, this would call the server to end combat
+                    console.log('Ending combat');
+                }
+            });
+        }
+        
+        // NPC action button
+        const npcActionButton = document.getElementById('npc-action');
+        if (npcActionButton) {
+            npcActionButton.addEventListener('click', () => {
+                // In a real implementation, this would call the server to resolve NPC action
+                console.log('Resolving NPC action');
+            });
+        }
+        
+        // Add enemy button
+        const addEnemyButton = document.getElementById('add-enemy');
+        if (addEnemyButton) {
+            let enemyCount = 1;
+            
+            addEnemyButton.addEventListener('click', () => {
+                const container = document.getElementById('enemies-container');
+                
+                const enemyEntry = document.createElement('div');
+                enemyEntry.className = 'enemy-entry';
+                enemyEntry.innerHTML = `
+                    <div class="form-group">
+                        <label for="enemy-name-${enemyCount}">Name:</label>
+                        <input type="text" id="enemy-name-${enemyCount}" name="enemies[${enemyCount}].name" value="Enemy ${enemyCount + 1}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="enemy-hp-${enemyCount}">HP:</label>
+                        <input type="number" id="enemy-hp-${enemyCount}" name="enemies[${enemyCount}].hp" value="10" min="1" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="enemy-ac-${enemyCount}">Defense:</label>
+                        <input type="number" id="enemy-ac-${enemyCount}" name="enemies[${enemyCount}].defense" value="12" min="1" required>
+                    </div>
+                    
+                    <button type="button" class="remove-button" onclick="this.parentElement.remove()">✕</button>
+                `;
+                
+                container.appendChild(enemyEntry);
+                enemyCount++;
+            });
+        }
+    </script>
+</body>
+</html>

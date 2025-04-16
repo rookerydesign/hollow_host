@@ -1,0 +1,15 @@
+ruleset:
+  checks:
+    stealth: "1d20 + DEX"
+    persuasion: "1d20 + CHA"
+    arcana: "1d20 + INT"
+  combat:
+    attack: "1d20 + STR"
+    damage: "1d8 + weapon_bonus"
+  status_effects:
+    poisoned:
+      effect: "-2 to all checks"
+      duration: "3 turns"
+    blessed:
+      effect: "+1 to attack rolls"
+      duration: "until end of session"

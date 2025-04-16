@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Hollow Host</h1>
+            <nav>
+                <ul>
+                    <li><a href="/">Game</a></li>
+                    <li><a href="/character">Character</a></li>
+                    <li><a href="/help">Help</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main>
+            <div class="character-selection">
+                <h2>Characters</h2>
+                <div class="character-list">
+                    {% if characters %}
+                        {% for char in characters %}
+                            <a href="/character/{{ char['name']|lower|replace(' ', '_') }}" class="character-card {% if character and character.name == char['name'] %}active{% endif %}">
+                                <h3>{{ char['name'] }}</h3>
+                                <p>{{ char['class'] }} - Level {{ char['level'] }}</p>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p>No characters available.</p>
+                    {% endif %}
+                </div>
+                <div class="character-actions">
+                    <a href="/create-character" class="primary-button">Create New Character</a>
+                </div>
+            </div>
+            
+            <div class="character-sheet">
+                {% if character %}
+                    <h2>{{ character.name }}</h2>
+                    <p class="character-class">{{ character.class_name }} - Level {{ character.level }}</p>
+                    
+                    <div class="character-header">
+                        {% if character.image_path %}
+                            <div class="character-image">
+                                <img src="{{ character.get_image_url() }}" alt="{{ character.name }}">
+                            </div>
+                        {% endif %}
+                        
+                        {% if character.backstory %}
+                            <div class="backstory">
+                                <h3>Backstory</h3>
+                                <p>{{ character.backstory }}</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="stats-section">
+                        <h3>Stats</h3>
+                        <div class="stats-grid">
+                            {% for stat, value in character.stats.__dict__.items() %}
+                                <div class="stat-box">
+                                    <div class="stat-name">{{ stat }}</div>
+                                    <div class="stat-value">{{ value }}</div>
+                                    <div class="stat-modifier">{{ character.stats.get_modifier(stat) }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="skills-section">
+                        <h3>Skills</h3>
+                        <div class="skills-list">
+                            {% for skill, value in character.skills.__dict__.items() %}
+                                <div class="skill">
+                                    <span class="skill-name">{{ skill }}</span>
+                                    <span class="skill-value">{{ value }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <div class="abilities-section">
+                        <h3>Abilities</h3>
+                        <ul class="abilities-list">
+                            {% for ability in character.abilities %}
+                                <li>{{ ability }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="inventory-section">
+                        <h3>Inventory</h3>
+                        <ul class="inventory-list">
+                            {% for item in character.inventory %}
+                                <li>{{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    {% if character.status_effects %}
+                        <div class="status-effects-section">
+                            <h3>Status Effects</h3>
+                            <ul class="status-effects-list">
+                                {% for effect in character.status_effects %}
+                                    <li>{{ effect }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <p>No character data available.</p>
+                {% endif %}
+            </div>
+        </main>
+        
+        <footer>
+            <p>Hollow Host - AI Dungeon Master Engine</p>
+        </footer>
+    </div>
+</body>
+</html>
