@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hollow Host - Home</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        /* Additional styles for home screen */
+        .home-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .welcome-banner {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background-color: #2c3e50;
+            color: white;
+            border-radius: 5px;
+        }
+        
+        .welcome-banner h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .welcome-banner p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-card h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .feature-card .button {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .feature-card .button:hover {
+            background-color: #2980b9;
+        }
+        
+        .dev-mode-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .dev-mode-section h2 {
+            color: #e74c3c;
+            margin-top: 0;
+        }
+        
+        .dev-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .dev-tool-card {
+            background-color: white;
+            border-radius: 3px;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dev-tool-card h4 {
+            margin-top: 0;
+            color: #333;
+        }
+        
+        .dev-tool-card p {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="home-container">
+        <div class="welcome-banner">
+            <h1>Welcome to Hollow Host</h1>
+            <p>Your AI-powered tabletop RPG companion. Create campaigns, manage characters, and embark on epic adventures.</p>
+        </div>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h3>Resume Campaign</h3>
+                <p>Continue your adventure where you left off.</p>
+                <div class="button-container">
+                    <a href="/campaigns" class="button">View Campaigns</a>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Create Campaign</h3>
+                <p>Start a new adventure with a fresh campaign.</p>
+                <div class="button-container">
+                    <a href="/create-campaign" class="button">Create New</a>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Import Campaign</h3>
+                <p>Import an existing campaign from a file.</p>
+                <div class="button-container">
+                    <a href="/import-campaign" class="button">Import</a>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Character Roster</h3>
+                <p>View and manage your character collection.</p>
+                <div class="button-container">
+                    <a href="/character" class="button">View Characters</a>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Lore Journal</h3>
+                <p>Browse and edit your campaign's lore entries.</p>
+                <div class="button-container">
+                    <a href="/lore" class="button">Open Journal</a>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <h3>Session Logs</h3>
+                <p>Review logs from your previous game sessions.</p>
+                <div class="button-container">
+                    <a href="/sessions" class="button">View Logs</a>
+                </div>
+            </div>
+        </div>
+        
+        {% if dev_mode %}
+        <div class="dev-mode-section">
+            <h2>Developer Mode</h2>
+            <p>Advanced tools for development and debugging.</p>
+            
+            <div class="dev-tools-grid">
+                <div class="dev-tool-card">
+                    <h4>Save File Diffs</h4>
+                    <p>Compare changes between save file versions.</p>
+                    <a href="/dev/save-diffs" class="button">Open Tool</a>
+                </div>
+                
+                <div class="dev-tool-card">
+                    <h4>Export Tools</h4>
+                    <p>Export game data in various formats.</p>
+                    <a href="/dev/export" class="button">Export</a>
+                </div>
+                
+                <div class="dev-tool-card">
+                    <h4>Import Tools</h4>
+                    <p>Import game data from external sources.</p>
+                    <a href="/dev/import" class="button">Import</a>
+                </div>
+                
+                <div class="dev-tool-card">
+                    <h4>Raw State Viewer</h4>
+                    <p>Inspect and modify raw game state.</p>
+                    <a href="/dev/state-viewer" class="button">View State</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        // Check for developer mode in localStorage or via URL parameter
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const devModeParam = urlParams.get('dev_mode');
+            
+            if (devModeParam === 'true') {
+                localStorage.setItem('dev_mode', 'true');
+            } else if (devModeParam === 'false') {
+                localStorage.setItem('dev_mode', 'false');
+            }
+            
+            // Toggle dev mode section visibility based on localStorage
+            const devMode = localStorage.getItem('dev_mode') === 'true';
+            const devModeSection = document.querySelector('.dev-mode-section');
+            
+            if (devModeSection) {
+                devModeSection.style.display = devMode ? 'block' : 'none';
+            }
+        });
+    </script>
+</body>
+</html>

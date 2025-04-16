@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campaigns - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .campaigns-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .campaign-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .campaign-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .campaign-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .campaign-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .campaign-title {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .campaign-version {
+            font-size: 0.8rem;
+            color: #666;
+            background-color: #f0f0f0;
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+        }
+        
+        .campaign-meta {
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .campaign-meta p {
+            margin: 0.3rem 0;
+        }
+        
+        .campaign-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .empty-state h2 {
+            margin-top: 0;
+            color: #666;
+        }
+        
+        .empty-state p {
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="campaigns-container">
+        <div class="page-header">
+            <h1>Your Campaigns</h1>
+            <div class="action-buttons">
+                <a href="/create-campaign" class="button">Create New</a>
+                <a href="/import-campaign" class="button">Import</a>
+                <a href="/" class="button">Back to Home</a>
+            </div>
+        </div>
+        
+        {% if campaigns %}
+        <div class="campaign-grid">
+            {% for campaign in campaigns %}
+            <div class="campaign-card">
+                <div class="campaign-header">
+                    <h2 class="campaign-title">{{ campaign.name }}</h2>
+                    <span class="campaign-version">v{{ campaign.latest_version }}</span>
+                </div>
+                
+                <div class="campaign-meta">
+                    <p><strong>ID:</strong> {{ campaign.campaign_id }}</p>
+                    <p><strong>Last Updated:</strong> {{ campaign.last_updated }}</p>
+                </div>
+                
+                <div class="campaign-actions">
+                    <a href="/campaign/{{ campaign.campaign_id }}/versions" class="button">Versions</a>
+                    <a href="/campaign/{{ campaign.campaign_id }}" class="button">Details</a>
+                    <a href="/play/{{ campaign.campaign_id }}" class="button">Resume</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <h2>No Campaigns Found</h2>
+            <p>You haven't created any campaigns yet. Get started by creating your first campaign!</p>
+            <a href="/create-campaign" class="button">Create New Campaign</a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

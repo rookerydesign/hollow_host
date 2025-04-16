@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Logs - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .sessions-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+        }
+        
+        .sessions-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.5rem;
+        }
+        
+        .sessions-sidebar {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .sessions-sidebar h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            color: #2c3e50;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .sessions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .session-item {
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
+        
+        .session-item:last-child {
+            border-bottom: none;
+        }
+        
+        .session-item a {
+            display: block;
+            padding: 0.5rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: background-color 0.2s;
+        }
+        
+        .session-item a:hover,
+        .session-item a.active {
+            background-color: #f0f0f0;
+        }
+        
+        .session-item a.active {
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .session-meta {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        
+        .session-content {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+        
+        .session-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .session-title {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .session-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .session-detail {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .session-detail h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .session-messages {
+            margin-top: 2rem;
+        }
+        
+        .message-timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+        
+        .message-timeline::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0.5rem;
+            width: 2px;
+            background-color: #e0e0e0;
+        }
+        
+        .message-entry {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .message-entry:last-child {
+            border-bottom: none;
+        }
+        
+        .message-entry::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.5rem;
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            background-color: #3498db;
+        }
+        
+        .message-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+        
+        .message-player {
+            background-color: #e8f4f8;
+            padding: 1rem;
+            border-radius: 5px;
+            margin-bottom: 1rem;
+        }
+        
+        .message-dm {
+            background-color: #f8f8f8;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        
+        .message-label {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .empty-state h2 {
+            margin-top: 0;
+            color: #666;
+        }
+        
+        .empty-state p {
+            color: #888;
+            margin-bottom: 1.5rem;
+        }
+        
+        .export-options {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        .export-options h3 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="sessions-container">
+        <div class="page-header">
+            <h1>Session Logs</h1>
+            <a href="/" class="button">Back to Home</a>
+        </div>
+        
+        <div class="sessions-layout">
+            <div class="sessions-sidebar">
+                <h3>Recent Sessions</h3>
+                
+                {% if sessions %}
+                <ul class="sessions-list">
+                    {% for session in sessions %}
+                    <li class="session-item">
+                        <a href="/sessions/{{ session.session_id }}" {% if current_session and current_session.session_id == session.session_id %}class="active"{% endif %}>
+                            <div>{{ session.current_location }}</div>
+                            <div class="session-meta">
+                                <span>{{ session.character_name }}</span> • 
+                                <span>{{ session.last_updated }}</span>
+                            </div>
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p>No sessions found.</p>
+                {% endif %}
+            </div>
+            
+            <div class="session-content">
+                {% if current_session %}
+                <div class="session-header">
+                    <h2 class="session-title">{{ current_session.current_location }}</h2>
+                    <span>Session ID: {{ current_session.session_id }}</span>
+                </div>
+                
+                <div class="session-details">
+                    <div class="session-detail">
+                        <h4>Character</h4>
+                        <p>{{ current_session.character_name }}</p>
+                    </div>
+                    
+                    <div class="session-detail">
+                        <h4>Started</h4>
+                        <p>{{ current_session.started_at }}</p>
+                    </div>
+                    
+                    <div class="session-detail">
+                        <h4>Last Updated</h4>
+                        <p>{{ current_session.last_updated }}</p>
+                    </div>
+                </div>
+                
+                <div class="session-messages">
+                    <h3>Session History</h3>
+                    
+                    {% if history %}
+                    <div class="message-timeline">
+                        {% for entry in history %}
+                        <div class="message-entry">
+                            <div class="message-timestamp">{{ entry.timestamp }}</div>
+                            
+                            <div class="message-player">
+                                <div class="message-label">Player:</div>
+                                <div>{{ entry.player_input }}</div>
+                            </div>
+                            
+                            <div class="message-dm">
+                                <div class="message-label">DM:</div>
+                                <div>{{ entry.dm_response }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <p>No history entries found for this session.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="export-options">
+                    <h3>Export Options</h3>
+                    <div class="export-buttons">
+                        <a href="/sessions/{{ current_session.session_id }}/export/text" class="button">Export as Text</a>
+                        <a href="/sessions/{{ current_session.session_id }}/export/json" class="button">Export as JSON</a>
+                        <a href="/sessions/{{ current_session.session_id }}/export/html" class="button">Export as HTML</a>
+                    </div>
+                </div>
+                
+                {% else %}
+                <div class="empty-state">
+                    <h2>No Session Selected</h2>
+                    <p>Select a session from the sidebar to view its details and history.</p>
+                    
+                    {% if not sessions %}
+                    <p>You haven't played any sessions yet. Start a new game to create your first session!</p>
+                    <a href="/play" class="button">Start New Game</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

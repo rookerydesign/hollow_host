@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Tools - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .dev-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+            color: #e74c3c;
+        }
+        
+        .dev-warning {
+            background-color: #fcf8e3;
+            border-left: 4px solid #f39c12;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 3px;
+        }
+        
+        .dev-warning h3 {
+            margin-top: 0;
+            color: #f39c12;
+        }
+        
+        .dev-warning p {
+            margin-bottom: 0;
+        }
+        
+        .dev-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .dev-tool-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .dev-tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dev-tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .dev-tool-title {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .dev-tool-icon {
+            font-size: 1.5rem;
+            color: #3498db;
+        }
+        
+        .dev-tool-description {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dev-tool-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .tab-container {
+            margin-top: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .tab.active {
+            border-bottom-color: #3498db;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0 0 5px 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Save Diffs Styles */
+        .diff-container {
+            margin-top: 1rem;
+        }
+        
+        .diff-selector {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .diff-selector select {
+            flex: 1;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        
+        .diff-results {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .diff-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .diff-section h4 {
+            margin-top: 0;
+            padding: 0.75rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .diff-content {
+            padding: 1rem;
+        }
+        
+        .diff-item {
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .diff-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .diff-added {
+            color: #28a745;
+        }
+        
+        .diff-removed {
+            color: #dc3545;
+        }
+        
+        .diff-modified {
+            color: #fd7e14;
+        }
+        
+        /* State Viewer Styles */
+        .state-viewer {
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+        
+        .state-tree {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: auto;
+            padding: 1rem;
+            font-family: monospace;
+            background-color: #f8f9fa;
+        }
+        
+        .state-path {
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: #f0f0f0;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+        
+        .state-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+        
+        .state-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        /* Import/Export Styles */
+        .export-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .export-option {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 1rem;
+            border: 1px solid #ddd;
+        }
+        
+        .export-option h4 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+        }
+        
+        .export-option p {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .import-dropzone {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .import-dropzone:hover {
+            border-color: #3498db;
+        }
+        
+        .import-dropzone p {
+            margin-bottom: 1rem;
+            color: #666;
+        }
+        
+        .import-options {
+            margin-top: 1.5rem;
+        }
+        
+        .import-options h4 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+        
+        .import-option {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dev-container">
+        <div class="page-header">
+            <h1>Developer Tools</h1>
+            <a href="/" class="button">Back to Home</a>
+        </div>
+        
+        <div class="dev-warning">
+            <h3>Developer Mode Active</h3>
+            <p>These tools are intended for development and debugging purposes. Use with caution as they can modify game state directly.</p>
+        </div>
+        
+        <div class="dev-tools-grid">
+            <div class="dev-tool-card">
+                <div class="dev-tool-header">
+                    <h3 class="dev-tool-title">Save File Diffs</h3>
+                    <div class="dev-tool-icon">📊</div>
+                </div>
+                <div class="dev-tool-description">
+                    <p>Compare changes between different versions of save files to track state changes over time.</p>
+                </div>
+                <div class="dev-tool-actions">
+                    <a href="/dev/save-diffs" class="button">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="dev-tool-card">
+                <div class="dev-tool-header">
+                    <h3 class="dev-tool-title">Export Tools</h3>
+                    <div class="dev-tool-icon">📤</div>
+                </div>
+                <div class="dev-tool-description">
+                    <p>Export game data in various formats for backup, analysis, or sharing.</p>
+                </div>
+                <div class="dev-tool-actions">
+                    <a href="/dev/export" class="button">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="dev-tool-card">
+                <div class="dev-tool-header">
+                    <h3 class="dev-tool-title">Import Tools</h3>
+                    <div class="dev-tool-icon">📥</div>
+                </div>
+                <div class="dev-tool-description">
+                    <p>Import game data from external sources or restore from backups.</p>
+                </div>
+                <div class="dev-tool-actions">
+                    <a href="/dev/import" class="button">Open Tool</a>
+                </div>
+            </div>
+            
+            <div class="dev-tool-card">
+                <div class="dev-tool-header">
+                    <h3 class="dev-tool-title">Raw State Viewer</h3>
+                    <div class="dev-tool-icon">🔍</div>
+                </div>
+                <div class="dev-tool-description">
+                    <p>Inspect and modify raw game state data for debugging purposes.</p>
+                </div>
+                <div class="dev-tool-actions">
+                    <a href="/dev/state-viewer" class="button">Open Tool</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tab-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="save-diffs">Save File Diffs</div>
+                <div class="tab" data-tab="export">Export Tools</div>
+                <div class="tab" data-tab="import">Import Tools</div>
+                <div class="tab" data-tab="state-viewer">Raw State Viewer</div>
+            </div>
+            
+            <div class="tab-content active" id="save-diffs-content">
+                <h3>Compare Save File Versions</h3>
+                <p>Select a campaign and two versions to compare the differences between them.</p>
+                
+                <div class="diff-container">
+                    <div class="diff-selector">
+                        <select id="diff-campaign">
+                            <option value="">Select Campaign</option>
+                            {% for campaign in campaigns %}
+                            <option value="{{ campaign.campaign_id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <select id="diff-version1" disabled>
+                            <option value="">Select Version 1</option>
+                        </select>
+                        
+                        <select id="diff-version2" disabled>
+                            <option value="">Select Version 2</option>
+                        </select>
+                        
+                        <button id="compare-button" class="button" disabled>Compare</button>
+                    </div>
+                    
+                    <div class="diff-results" id="diff-results" style="display: none;">
+                        <div class="diff-section">
+                            <h4>Characters</h4>
+                            <div class="diff-content" id="diff-characters">
+                                <p>No character changes detected.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="diff-section">
+                            <h4>Locations</h4>
+                            <div class="diff-content" id="diff-locations">
+                                <p>No location changes detected.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="diff-section">
+                            <h4>Quests</h4>
+                            <div class="diff-content" id="diff-quests">
+                                <p>No quest changes detected.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="diff-section">
+                            <h4>World Flags</h4>
+                            <div class="diff-content" id="diff-flags">
+                                <p>No flag changes detected.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="export-content">
+                <h3>Export Game Data</h3>
+                <p>Export various game data for backup, analysis, or sharing.</p>
+                
+                <div class="export-options">
+                    <div class="export-option">
+                        <h4>Export Campaign</h4>
+                        <p>Export a complete campaign including all versions, characters, and lore.</p>
+                        <select id="export-campaign">
+                            <option value="">Select Campaign</option>
+                            {% for campaign in campaigns %}
+                            <option value="{{ campaign.campaign_id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="button" id="export-campaign-button" disabled>Export</button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h4>Export Characters</h4>
+                        <p>Export character data as JSON files.</p>
+                        <select id="export-character" multiple>
+                            {% for character in characters %}
+                            <option value="{{ character.name }}">{{ character.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="hint">Hold Ctrl/Cmd to select multiple characters.</div>
+                        <button class="button" id="export-character-button">Export</button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h4>Export Lore</h4>
+                        <p>Export lore journal entries.</p>
+                        <select id="export-lore-campaign">
+                            <option value="">Select Campaign</option>
+                            {% for campaign in campaigns %}
+                            <option value="{{ campaign.campaign_id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button class="button" id="export-lore-button" disabled>Export</button>
+                    </div>
+                    
+                    <div class="export-option">
+                        <h4>Export Session Logs</h4>
+                        <p>Export session history logs.</p>
+                        <select id="export-session">
+                            <option value="">Select Session</option>
+                            {% for session in sessions %}
+                            <option value="{{ session.session_id }}">{{ session.current_location }} ({{ session.last_updated }})</option>
+                            {% endfor %}
+                        </select>
+                        <button class="button" id="export-session-button" disabled>Export</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="import-content">
+                <h3>Import Game Data</h3>
+                <p>Import game data from external sources or restore from backups.</p>
+                
+                <div class="import-dropzone" id="import-dropzone">
+                    <p>Drag and drop files here or click to select files</p>
+                    <button class="button" id="import-browse-button">Browse Files</button>
+                    <input type="file" id="import-file" style="display: none;" multiple>
+                </div>
+                
+                <div class="import-options">
+                    <h4>Import Options</h4>
+                    <div class="import-option">
+                        <label>
+                            <input type="checkbox" id="import-overwrite" checked>
+                            Overwrite existing data if conflicts occur
+                        </label>
+                    </div>
+                    <div class="import-option">
+                        <label>
+                            <input type="checkbox" id="import-validate" checked>
+                            Validate data before importing
+                        </label>
+                    </div>
+                    <div class="import-option">
+                        <label>
+                            <input type="checkbox" id="import-backup" checked>
+                            Create backup before importing
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="button" id="import-button" disabled>Import Selected Files</button>
+            </div>
+            
+            <div class="tab-content" id="state-viewer-content">
+                <h3>Raw State Viewer</h3>
+                <p>Inspect and modify raw game state data for debugging purposes.</p>
+                
+                <div class="state-controls">
+                    <div class="state-selector">
+                        <select id="state-campaign">
+                            <option value="">Select Campaign</option>
+                            {% for campaign in campaigns %}
+                            <option value="{{ campaign.campaign_id }}">{{ campaign.name }}</option>
+                            {% endfor %}
+                        </select>
+                        
+                        <select id="state-version" disabled>
+                            <option value="">Latest Version</option>
+                        </select>
+                    </div>
+                    
+                    <div class="state-actions">
+                        <button class="button" id="refresh-state-button">Refresh</button>
+                        <button class="button button-secondary" id="save-state-button" disabled>Save Changes</button>
+                    </div>
+                </div>
+                
+                <div class="state-path" id="state-path">root</div>
+                
+                <div class="state-viewer">
+                    <div class="state-tree" id="state-tree">
+                        <p>Select a campaign to view its state data.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show corresponding content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-content`).classList.add('active');
+                });
+            });
+            
+            // Import file handling
+            const importDropzone = document.getElementById('import-dropzone');
+            const importFileInput = document.getElementById('import-file');
+            const importBrowseButton = document.getElementById('import-browse-button');
+            const importButton = document.getElementById('import-button');
+            
+            importBrowseButton.addEventListener('click', function() {
+                importFileInput.click();
+            });
+            
+            importFileInput.addEventListener('change', function() {
+                if (this.files.length > 0) {
+                    importButton.disabled = false;
+                    importDropzone.textContent = `${this.files.length} file(s) selected`;
+                }
+            });
+            
+            importDropzone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#3498db';
+            });
+            
+            importDropzone.addEventListener('dragleave', function() {
+                this.style.borderColor = '#ddd';
+            });
+            
+            importDropzone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.style.borderColor = '#ddd';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    importFileInput.files = e.dataTransfer.files;
+                    importButton.disabled = false;
+                    this.textContent = `${e.dataTransfer.files.length} file(s) selected`;
+                }
+            });
+            
+            // Export button handling
+            const exportCampaignSelect = document.getElementById('export-campaign');
+            const exportCampaignButton = document.getElementById('export-campaign-button');
+            
+            exportCampaignSelect.addEventListener('change', function() {
+                exportCampaignButton.disabled = this.value === '';
+            });
+            
+            // Diff handling
+            const diffCampaignSelect = document.getElementById('diff-campaign');
+            const diffVersion1Select = document.getElementById('diff-version1');
+            const diffVersion2Select = document.getElementById('diff-version2');
+            const compareButton = document.getElementById('compare-button');
+            
+            diffCampaignSelect.addEventListener('change', function() {
+                if (this.value === '') {
+                    diffVersion1Select.disabled = true;
+                    diffVersion2Select.disabled = true;
+                    compareButton.disabled = true;
+                } else {
+                    // In a real implementation, this would fetch versions for the selected campaign
+                    diffVersion1Select.disabled = false;
+                    diffVersion2Select.disabled = false;
+                    
+                    // For demo purposes, add some dummy versions
+                    diffVersion1Select.innerHTML = '<option value="">Select Version 1</option>';
+                    diffVersion2Select.innerHTML = '<option value="">Select Version 2</option>';
+                    
+                    for (let i = 1; i <= 5; i++) {
+                        const option1 = document.createElement('option');
+                        option1.value = i;
+                        option1.textContent = `Version ${i}`;
+                        diffVersion1Select.appendChild(option1);
+                        
+                        const option2 = document.createElement('option');
+                        option2.value = i;
+                        option2.textContent = `Version ${i}`;
+                        diffVersion2Select.appendChild(option2);
+                    }
+                }
+            });
+            
+            diffVersion1Select.addEventListener('change', updateCompareButton);
+            diffVersion2Select.addEventListener('change', updateCompareButton);
+            
+            function updateCompareButton() {
+                compareButton.disabled = diffVersion1Select.value === '' || 
+                                        diffVersion2Select.value === '' || 
+                                        diffVersion1Select.value === diffVersion2Select.value;
+            }
+            
+            compareButton.addEventListener('click', function() {
+                // In a real implementation, this would fetch and display the diff
+                document.getElementById('diff-results').style.display = 'block';
+                
+                // For demo purposes, show some dummy diff data
+                document.getElementById('diff-characters').innerHTML = `
+                    <div class="diff-item">
+                        <span class="diff-added">+ Added: Thorne Ironheart</span>
+                    </div>
+                    <div class="diff-item">
+                        <span class="diff-modified">~ Modified: Elara Moonwhisper (Level 2 → Level 3)</span>
+                    </div>
+                `;
+                
+                document.getElementById('diff-locations').innerHTML = `
+                    <div class="diff-item">
+                        <span class="diff-added">+ Added: Dark Forest</span>
+                    </div>
+                    <div class="diff-item">
+                        <span class="diff-modified">~ Modified: Town Square (Added NPCs: Merchant)</span>
+                    </div>
+                `;
+                
+                document.getElementById('diff-quests').innerHTML = `
+                    <div class="diff-item">
+                        <span class="diff-added">+ New Active: The Missing Artifact</span>
+                    </div>
+                    <div class="diff-item">
+                        <span class="diff-modified">~ Completed: Rescue the Blacksmith</span>
+                    </div>
+                `;
+                
+                document.getElementById('diff-flags').innerHTML = `
+                    <div class="diff-item">
+                        <span class="diff-added">+ Added: met_mayor = true</span>
+                    </div>
+                    <div class="diff-item">
+                        <span class="diff-modified">~ Modified: town_reputation (5 → 7)</span>
+                    </div>
+                    <div class="diff-item">
+                        <span class="diff-removed">- Removed: tutorial_complete</span>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

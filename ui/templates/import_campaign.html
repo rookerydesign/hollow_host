@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Import Campaign - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+        }
+        
+        .form-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group .hint {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: #3498db;
+        }
+        
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-icon {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            color: #666;
+        }
+        
+        .file-upload-selected {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #333;
+            display: none;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .form-actions .button {
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .button-secondary {
+            background-color: #95a5a6;
+        }
+        
+        .button-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Import Campaign</h1>
+            <a href="/campaigns" class="button button-secondary">Back to Campaigns</a>
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if success %}
+        <div class="success-message">
+            {{ success }}
+        </div>
+        {% endif %}
+        
+        <div class="form-card">
+            <form action="/import-campaign" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="campaign_file">Campaign File</label>
+                    <div class="file-upload" id="file-upload-area">
+                        <div class="file-upload-icon">📁</div>
+                        <div class="file-upload-text">
+                            <p>Drag and drop your campaign file here</p>
+                            <p>or</p>
+                            <button type="button" class="button" id="browse-button">Browse Files</button>
+                        </div>
+                        <div class="file-upload-selected" id="file-selected">
+                            Selected file: <span id="file-name"></span>
+                        </div>
+                        <input type="file" id="campaign_file" name="campaign_file" accept=".zip" required>
+                    </div>
+                    <div class="hint">Upload a campaign export file (.zip) created by Hollow Host.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Import Options</label>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="overwrite_existing" value="true">
+                            Overwrite if campaign with same ID exists
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="import_characters" value="true" checked>
+                            Import associated characters
+                        </label>
+                    </div>
+                    <div>
+                        <label>
+                            <input type="checkbox" name="import_lore" value="true" checked>
+                            Import lore elements
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="/campaigns" class="button button-secondary">Cancel</a>
+                    <button type="submit" class="button">Import Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('campaign_file');
+            const browseButton = document.getElementById('browse-button');
+            const fileUploadArea = document.getElementById('file-upload-area');
+            const fileSelected = document.getElementById('file-selected');
+            const fileName = document.getElementById('file-name');
+            
+            // Open file dialog when browse button is clicked
+            browseButton.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // Handle file selection
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length > 0) {
+                    fileName.textContent = fileInput.files[0].name;
+                    fileSelected.style.display = 'block';
+                } else {
+                    fileSelected.style.display = 'none';
+                }
+            });
+            
+            // Handle drag and drop
+            fileUploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '#3498db';
+            });
+            
+            fileUploadArea.addEventListener('dragleave', function() {
+                fileUploadArea.style.borderColor = '#ddd';
+            });
+            
+            fileUploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                fileUploadArea.style.borderColor = '#ddd';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileName.textContent = e.dataTransfer.files[0].name;
+                    fileSelected.style.display = 'block';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

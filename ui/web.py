@@ -50,6 +50,11 @@ class WebUI:
     def _register_routes(self) -> None:
         """Register FastAPI routes."""
         @self.app.get("/", response_class=HTMLResponse)
+        async def home(request: Request):
+            """Render the home page."""
+            return self.render_home(request)
+        
+        @self.app.get("/play", response_class=HTMLResponse)
         async def index(request: Request):
             """Render the main game page."""
             return self.render_index(request)
@@ -58,6 +63,78 @@ class WebUI:
         async def combat_page(request: Request):
             """Render the combat page."""
             return self.render_combat(request)
+        
+        @self.app.get("/campaigns", response_class=HTMLResponse)
+        async def campaigns_page(request: Request):
+            """Render the campaigns page."""
+            return self.render_campaigns(request)
+        
+        @self.app.get("/create-campaign", response_class=HTMLResponse)
+        async def create_campaign_page(request: Request):
+            """Render the create campaign page."""
+            return self.render_create_campaign(request)
+        
+        @self.app.post("/create-campaign")
+        async def create_campaign(request: Request):
+            """Process campaign creation form."""
+            form_data = await request.form()
+            return await self.process_create_campaign(request, form_data)
+        
+        @self.app.get("/import-campaign", response_class=HTMLResponse)
+        async def import_campaign_page(request: Request):
+            """Render the import campaign page."""
+            return self.render_import_campaign(request)
+        
+        @self.app.post("/import-campaign")
+        async def import_campaign(request: Request):
+            """Process campaign import form."""
+            form_data = await request.form()
+            return await self.process_import_campaign(request, form_data)
+        
+        @self.app.get("/lore", response_class=HTMLResponse)
+        async def lore_page(request: Request):
+            """Render the lore journal page."""
+            return self.render_lore(request)
+        
+        @self.app.get("/lore/create", response_class=HTMLResponse)
+        async def create_lore_page(request: Request):
+            """Render the create lore entry page."""
+            return self.render_create_lore(request)
+        
+        @self.app.get("/lore/edit/{lore_id}", response_class=HTMLResponse)
+        async def edit_lore_page(request: Request, lore_id: str):
+            """Render the edit lore entry page."""
+            return self.render_edit_lore(request, lore_id)
+        
+        @self.app.get("/sessions", response_class=HTMLResponse)
+        async def sessions_page(request: Request):
+            """Render the sessions log page."""
+            return self.render_sessions(request)
+        
+        @self.app.get("/sessions/{session_id}", response_class=HTMLResponse)
+        async def session_detail_page(request: Request, session_id: str):
+            """Render the session detail page."""
+            return self.render_session_detail(request, session_id)
+        
+        @self.app.get("/dev/save-diffs", response_class=HTMLResponse)
+        async def save_diffs_page(request: Request):
+            """Render the save file diffs page."""
+            return self.render_dev_tools(request, "save-diffs")
+        
+        @self.app.get("/dev/export", response_class=HTMLResponse)
+        async def export_page(request: Request):
+            """Render the export tools page."""
+            return self.render_dev_tools(request, "export")
+        
+        @self.app.get("/dev/import", response_class=HTMLResponse)
+        async def import_page(request: Request):
+            """Render the import tools page."""
+            return self.render_dev_tools(request, "import")
+        
+        @self.app.get("/dev/state-viewer", response_class=HTMLResponse)
+        async def state_viewer_page(request: Request):
+            """Render the raw state viewer page."""
+            return self.render_dev_tools(request, "state-viewer")
         
         @self.app.post("/start-combat")
         async def start_combat(request: Request):
@@ -280,10 +357,382 @@ class WebUI:
         
         return processed_response
 
-        @self.app.get("/help", response_class=HTMLResponse)
-        async def help_page(request: Request):
-            """Render the help page."""
-            return self.render_help(request)
+    def render_home(self, request: Request) -> HTMLResponse:
+        """
+        Render the home page.
+        
+        Args:
+            request: FastAPI request object
+            
+        Returns:
+            HTML response
+        """
+        # Check if developer mode is active
+        dev_mode = False
+        
+        # In a real implementation, this would be determined by a setting or environment variable
+        # For now, we'll just set it to False
+        
+        return self.templates.TemplateResponse(
+            "home.html",
+            {
+                "request": request,
+                "dev_mode": dev_mode
+            }
+        )
+    
+    def render_campaigns(self, request: Request) -> HTMLResponse:
+        """
+        Render the campaigns page.
+        
+        Args:
+            request: FastAPI request object
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available campaigns
+        from world.persistence import SaveManager
+        
+        save_manager = SaveManager()
+        campaigns = save_manager.list_campaigns()
+        
+        return self.templates.TemplateResponse(
+            "campaigns.html",
+            {
+                "request": request,
+                "campaigns": campaigns
+            }
+        )
+    
+    def render_create_campaign(self, request: Request, error: str = None) -> HTMLResponse:
+        """
+        Render the create campaign page.
+        
+        Args:
+            request: FastAPI request object
+            error: Optional error message
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available characters
+        from characters.builder import CharacterBuilder
+        
+        builder = CharacterBuilder()
+        characters = builder.list_characters()
+        
+        # Get list of available rulesets
+        from rules.loader import RulesetLoader
+        
+        loader = RulesetLoader()
+        rulesets = loader.list_available_rulesets()
+        
+        return self.templates.TemplateResponse(
+            "create_campaign.html",
+            {
+                "request": request,
+                "characters": characters,
+                "rulesets": rulesets,
+                "error": error
+            }
+        )
+    
+    async def process_create_campaign(self, request: Request, form_data: Dict) -> HTMLResponse:
+        """
+        Process campaign creation form.
+        
+        Args:
+            request: FastAPI request object
+            form_data: Form data dictionary
+            
+        Returns:
+            HTML response (redirect or error page)
+        """
+        from world.persistence import SaveManager, WorldState
+        from fastapi.responses import RedirectResponse
+        import uuid
+        
+        try:
+            # Extract form data
+            campaign_name = form_data.get("campaign_name")
+            campaign_description = form_data.get("campaign_description", "")
+            starting_location = form_data.get("starting_location", "Town Square")
+            ruleset = form_data.get("ruleset", "default")
+            
+            # Generate a unique campaign ID
+            campaign_id = f"campaign_{uuid.uuid4().hex[:8]}"
+            
+            # Create world state
+            world_state = WorldState(
+                campaign_id=campaign_id,
+                name=campaign_name
+            )
+            
+            # Add starting location
+            from world.persistence import WorldLocation
+            
+            starting_loc = WorldLocation(
+                name=starting_location,
+                description=f"You are at {starting_location}.",
+                discovered=True
+            )
+            
+            world_state.add_location(starting_loc)
+            
+            # Set world flags
+            world_state.set_flag("description", campaign_description)
+            world_state.set_flag("ruleset", ruleset)
+            world_state.set_flag("current_location", starting_location)
+            
+            # Add initial characters if selected
+            initial_characters = form_data.getlist("initial_characters")
+            if initial_characters:
+                from characters.builder import CharacterBuilder
+                
+                builder = CharacterBuilder()
+                for char_name in initial_characters:
+                    character = builder.get_character(char_name)
+                    if character:
+                        world_state.add_character(character)
+            
+            # Save the world state
+            save_manager = SaveManager()
+            save_manager.save_world_state(world_state)
+            
+            # Redirect to campaigns page
+            return RedirectResponse(url="/campaigns", status_code=303)
+            
+        except Exception as e:
+            return self.render_create_campaign(request, error=f"Error creating campaign: {str(e)}")
+    
+    def render_import_campaign(self, request: Request, error: str = None, success: str = None) -> HTMLResponse:
+        """
+        Render the import campaign page.
+        
+        Args:
+            request: FastAPI request object
+            error: Optional error message
+            success: Optional success message
+            
+        Returns:
+            HTML response
+        """
+        return self.templates.TemplateResponse(
+            "import_campaign.html",
+            {
+                "request": request,
+                "error": error,
+                "success": success
+            }
+        )
+    
+    async def process_import_campaign(self, request: Request, form_data: Dict) -> HTMLResponse:
+        """
+        Process campaign import form.
+        
+        Args:
+            request: FastAPI request object
+            form_data: Form data dictionary
+            
+        Returns:
+            HTML response (redirect or error page)
+        """
+        from world.persistence import SaveManager
+        from fastapi.responses import RedirectResponse
+        import tempfile
+        import os
+        
+        try:
+            # Get the uploaded file
+            campaign_file = form_data.get("campaign_file")
+            if not campaign_file:
+                return self.render_import_campaign(request, error="No file uploaded")
+            
+            # Save the file to a temporary location
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as temp_file:
+                temp_file.write(await campaign_file.read())
+                temp_path = temp_file.name
+            
+            # Import the campaign
+            save_manager = SaveManager()
+            campaign_id = save_manager.import_campaign(temp_path)
+            
+            # Clean up the temporary file
+            os.unlink(temp_path)
+            
+            # Redirect to campaigns page
+            return RedirectResponse(url="/campaigns", status_code=303)
+            
+        except Exception as e:
+            return self.render_import_campaign(request, error=f"Error importing campaign: {str(e)}")
+    
+    def render_lore(self, request: Request) -> HTMLResponse:
+        """
+        Render the lore journal page.
+        
+        Args:
+            request: FastAPI request object
+            
+        Returns:
+            HTML response
+        """
+        # Get lore elements
+        from world.lore_manager import LoreManager, LoreType
+        
+        # For now, we'll use a default campaign ID
+        # In a real implementation, this would be determined by the current campaign
+        campaign_id = "default_campaign"
+        
+        lore_manager = LoreManager()
+        
+        # Get all lore elements
+        lore_elements = []
+        for lore_type in LoreType:
+            elements = lore_manager.get_lore_by_type(campaign_id, lore_type)
+            lore_elements.extend(elements)
+        
+        # Get all unique tags
+        tags = set()
+        for element in lore_elements:
+            tags.update(element.tags)
+        
+        return self.templates.TemplateResponse(
+            "lore.html",
+            {
+                "request": request,
+                "lore_elements": lore_elements,
+                "tags": sorted(list(tags))
+            }
+        )
+    
+    def render_create_lore(self, request: Request, error: str = None) -> HTMLResponse:
+        """
+        Render the create lore entry page.
+        
+        Args:
+            request: FastAPI request object
+            error: Optional error message
+            
+        Returns:
+            HTML response
+        """
+        # This would be implemented in a real application
+        # For now, we'll just return a placeholder
+        return HTMLResponse(content="Create Lore Entry Page - Not Implemented")
+    
+    def render_edit_lore(self, request: Request, lore_id: str) -> HTMLResponse:
+        """
+        Render the edit lore entry page.
+        
+        Args:
+            request: FastAPI request object
+            lore_id: ID of the lore entry to edit
+            
+        Returns:
+            HTML response
+        """
+        # This would be implemented in a real application
+        # For now, we'll just return a placeholder
+        return HTMLResponse(content=f"Edit Lore Entry Page - ID: {lore_id} - Not Implemented")
+    
+    def render_sessions(self, request: Request) -> HTMLResponse:
+        """
+        Render the sessions log page.
+        
+        Args:
+            request: FastAPI request object
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available sessions
+        from sessions.game_session import GameSession
+        
+        sessions = GameSession.list_sessions()
+        
+        return self.templates.TemplateResponse(
+            "sessions.html",
+            {
+                "request": request,
+                "sessions": sessions,
+                "current_session": None,
+                "history": []
+            }
+        )
+    
+    def render_session_detail(self, request: Request, session_id: str) -> HTMLResponse:
+        """
+        Render the session detail page.
+        
+        Args:
+            request: FastAPI request object
+            session_id: ID of the session to display
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available sessions
+        from sessions.game_session import GameSession
+        
+        sessions = GameSession.list_sessions()
+        
+        # Get the requested session
+        try:
+            current_session = GameSession.load(session_id)
+            history = current_session.history
+        except Exception:
+            current_session = None
+            history = []
+        
+        return self.templates.TemplateResponse(
+            "sessions.html",
+            {
+                "request": request,
+                "sessions": sessions,
+                "current_session": current_session,
+                "history": history
+            }
+        )
+    
+    def render_dev_tools(self, request: Request, active_tab: str = "save-diffs") -> HTMLResponse:
+        """
+        Render the developer tools page.
+        
+        Args:
+            request: FastAPI request object
+            active_tab: The active tab to display
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available campaigns
+        from world.persistence import SaveManager
+        
+        save_manager = SaveManager()
+        campaigns = save_manager.list_campaigns()
+        
+        # Get list of available characters
+        from characters.builder import CharacterBuilder
+        
+        builder = CharacterBuilder()
+        characters = builder.list_characters()
+        
+        # Get list of available sessions
+        from sessions.game_session import GameSession
+        
+        sessions = GameSession.list_sessions()
+        
+        return self.templates.TemplateResponse(
+            "dev_tools.html",
+            {
+                "request": request,
+                "active_tab": active_tab,
+                "campaigns": campaigns,
+                "characters": characters,
+                "sessions": sessions
+            }
+        )
     
     def render_index(self, request: Request,
                     character: Any = None,

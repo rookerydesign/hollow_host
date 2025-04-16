@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Campaign - Hollow Host</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+        }
+        
+        .form-card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 1rem;
+        }
+        
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        .form-group .hint {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.3rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .form-actions .button {
+            padding: 0.75rem 1.5rem;
+        }
+        
+        .button-secondary {
+            background-color: #95a5a6;
+        }
+        
+        .button-secondary:hover {
+            background-color: #7f8c8d;
+        }
+        
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h1>Create New Campaign</h1>
+            <a href="/campaigns" class="button button-secondary">Back to Campaigns</a>
+        </div>
+        
+        {% if error %}
+        <div class="error-message">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="form-card">
+            <form action="/create-campaign" method="post">
+                <div class="form-group">
+                    <label for="campaign_name">Campaign Name</label>
+                    <input type="text" id="campaign_name" name="campaign_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="campaign_description">Description</label>
+                    <textarea id="campaign_description" name="campaign_description" placeholder="Describe your campaign setting, theme, and goals..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="starting_location">Starting Location</label>
+                    <input type="text" id="starting_location" name="starting_location" placeholder="e.g., The Misty Tavern, Shadowfell Forest">
+                    <div class="hint">This will be the first location in your campaign.</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ruleset">Ruleset</label>
+                    <select id="ruleset" name="ruleset">
+                        <option value="default">Default Rules</option>
+                        {% for ruleset in rulesets %}
+                        <option value="{{ ruleset.id }}">{{ ruleset.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="initial_characters">Initial Characters</label>
+                    <select id="initial_characters" name="initial_characters" multiple>
+                        {% for character in characters %}
+                        <option value="{{ character.name }}">{{ character.name }} ({{ character.class }}, Level {{ character.level }})</option>
+                        {% endfor %}
+                    </select>
+                    <div class="hint">Hold Ctrl/Cmd to select multiple characters.</div>
+                </div>
+                
+                <div class="form-actions">
+                    <a href="/campaigns" class="button button-secondary">Cancel</a>
+                    <button type="submit" class="button">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
