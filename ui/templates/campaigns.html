@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campaigns - Hollow Host</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         .campaigns-container {
             max-width: 1200px;
@@ -17,10 +18,16 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            border-bottom: 2px solid #548662;
+            padding-bottom: 1rem;
         }
         
         .page-header h1 {
             margin: 0;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
+            color: #548662;
+            font-size: 2.5rem;
         }
         
         .action-buttons {
@@ -28,6 +35,72 @@
             gap: 1rem;
         }
         
+        .button {
+            font-family: 'Cattedrale', sans-serif;
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #548662;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background-color: #3e6349;
+        }
+        
+        .button-secondary {
+            background-color: #6c757d;
+        }
+        
+        .button-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .campaigns-tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 2rem;
+        }
+        
+        .campaigns-tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            color: #495057;
+            background-color: transparent;
+            transition: all 0.2s;
+        }
+        
+        .campaigns-tab:hover {
+            color: #548662;
+            border-color: #dee2e6;
+        }
+        
+        .campaigns-tab.active {
+            color: #548662;
+            background-color: #fff;
+            border-color: #dee2e6;
+            border-bottom-color: #fff;
+            margin-bottom: -1px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Existing Campaigns Tab */
         .campaign-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -56,7 +129,9 @@
         
         .campaign-title {
             margin: 0;
-            color: #2c3e50;
+            color: #548662;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
         }
         
         .campaign-version {
@@ -83,6 +158,82 @@
             gap: 0.5rem;
         }
         
+        /* Create Campaign Tab */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: #548662;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(58, 117, 97, 0.25);
+        }
+        
+        textarea.form-control {
+            min-height: 100px;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-check-input {
+            margin-right: 0.5rem;
+        }
+        
+        /* Import Campaign Tab */
+        .import-container {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+        }
+        
+        .file-upload {
+            border: 2px dashed #ced4da;
+            border-radius: 5px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        
+        .file-upload:hover {
+            border-color: #548662;
+        }
+        
+        .file-upload-icon {
+            font-size: 2rem;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+        
+        .file-upload-text {
+            color: #6c757d;
+        }
+        
+        .file-upload-input {
+            display: none;
+        }
+        
         .empty-state {
             text-align: center;
             padding: 3rem;
@@ -104,43 +255,210 @@
 <body>
     <div class="campaigns-container">
         <div class="page-header">
-            <h1>Your Campaigns</h1>
+            <h1>Campaigns</h1>
             <div class="action-buttons">
-                <a href="/create-campaign" class="button">Create New</a>
-                <a href="/import-campaign" class="button">Import</a>
-                <a href="/" class="button">Back to Home</a>
+                <a href="/" class="button button-secondary">Back to Home</a>
             </div>
         </div>
         
-        {% if campaigns %}
-        <div class="campaign-grid">
-            {% for campaign in campaigns %}
-            <div class="campaign-card">
-                <div class="campaign-header">
-                    <h2 class="campaign-title">{{ campaign.name }}</h2>
-                    <span class="campaign-version">v{{ campaign.latest_version }}</span>
+        <div class="campaigns-tabs">
+            <div class="campaigns-tab active" data-tab="existing-campaigns">Existing Campaigns</div>
+            <div class="campaigns-tab" data-tab="create-campaign">Create New Campaign</div>
+            <div class="campaigns-tab" data-tab="import-campaign">Import Campaign</div>
+        </div>
+        
+        <!-- Existing Campaigns Tab -->
+        <div class="tab-content active" id="existing-campaigns">
+            {% if campaigns %}
+            <div class="campaign-grid">
+                {% for campaign in campaigns %}
+                <div class="campaign-card">
+                    <div class="campaign-header">
+                        <h2 class="campaign-title">{{ campaign.name }}</h2>
+                        <span class="campaign-version">v{{ campaign.latest_version }}</span>
+                    </div>
+                    
+                    <div class="campaign-meta">
+                        <p><strong>ID:</strong> {{ campaign.campaign_id }}</p>
+                        <p><strong>Last Updated:</strong> {{ campaign.last_updated }}</p>
+                    </div>
+                    
+                    <div class="campaign-actions">
+                        <a href="/campaign/{{ campaign.campaign_id }}/versions" class="button button-secondary">Versions</a>
+                        <a href="/campaign/{{ campaign.campaign_id }}" class="button button-secondary">Details</a>
+                        <a href="/play/{{ campaign.campaign_id }}" class="button">Resume</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <h2>No Campaigns Found</h2>
+                <p>You haven't created any campaigns yet. Get started by creating your first campaign!</p>
+                <button class="button" onclick="switchTab('create-campaign')">Create New Campaign</button>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Create Campaign Tab -->
+        <div class="tab-content" id="create-campaign">
+            <form action="/create-campaign" method="post" class="create-campaign-form">
+                <div class="form-group">
+                    <label for="campaign_name">Campaign Name</label>
+                    <input type="text" id="campaign_name" name="campaign_name" class="form-control" required>
                 </div>
                 
-                <div class="campaign-meta">
-                    <p><strong>ID:</strong> {{ campaign.campaign_id }}</p>
-                    <p><strong>Last Updated:</strong> {{ campaign.last_updated }}</p>
+                <div class="form-group">
+                    <label for="campaign_description">Description</label>
+                    <textarea id="campaign_description" name="campaign_description" class="form-control"></textarea>
                 </div>
                 
-                <div class="campaign-actions">
-                    <a href="/campaign/{{ campaign.campaign_id }}/versions" class="button">Versions</a>
-                    <a href="/campaign/{{ campaign.campaign_id }}" class="button">Details</a>
-                    <a href="/play/{{ campaign.campaign_id }}" class="button">Resume</a>
+                <div class="form-group">
+                    <label for="starting_location">Starting Location</label>
+                    <input type="text" id="starting_location" name="starting_location" class="form-control" value="Town Square">
+                </div>
+                
+                <div class="form-group">
+                    <label for="ruleset">Ruleset</label>
+                    <select id="ruleset" name="ruleset" class="form-control">
+                        <option value="default">Default Rules</option>
+                        {% for ruleset in rulesets %}
+                        <option value="{{ ruleset.path }}">{{ ruleset.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Initial Characters</label>
+                    {% if characters %}
+                    {% for char in characters %}
+                    <div class="form-check">
+                        <input type="checkbox" id="char_{{ loop.index }}" name="initial_characters" value="{{ char.name }}" class="form-check-input">
+                        <label for="char_{{ loop.index }}" class="form-check-label">{{ char.name }} ({{ char.class }} - Level {{ char.level }})</label>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <p>No characters available. <a href="/create-character">Create a character</a> first.</p>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="button">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Import Campaign Tab -->
+        <div class="tab-content" id="import-campaign">
+            <div class="import-container">
+                <h2>Import Campaign</h2>
+                <p>Upload a campaign file to import it into Hollow Host.</p>
+                
+                <form action="/import-campaign" method="post" enctype="multipart/form-data">
+                    <div class="file-upload" id="file-upload-area">
+                        <div class="file-upload-icon">📁</div>
+                        <p class="file-upload-text">Click to select a campaign file or drag and drop it here</p>
+                        <input type="file" name="campaign_file" id="campaign_file" class="file-upload-input" accept=".zip,.json">
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="button">Import Campaign</button>
+                    </div>
+                </form>
+                
+                <div class="import-notes">
+                    <h3>Supported Formats</h3>
+                    <ul>
+                        <li>Hollow Host Campaign Archive (.zip)</li>
+                        <li>Campaign JSON (.json)</li>
+                    </ul>
+                    
+                    <h3>Notes</h3>
+                    <ul>
+                        <li>Maximum file size: 50MB</li>
+                        <li>Imported campaigns will be validated before being added to your collection</li>
+                        <li>If a campaign with the same ID already exists, you'll be prompted to confirm the import</li>
+                    </ul>
                 </div>
             </div>
-            {% endfor %}
         </div>
-        {% else %}
-        <div class="empty-state">
-            <h2>No Campaigns Found</h2>
-            <p>You haven't created any campaigns yet. Get started by creating your first campaign!</p>
-            <a href="/create-campaign" class="button">Create New Campaign</a>
-        </div>
-        {% endif %}
     </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching
+            const tabs = document.querySelectorAll('.campaigns-tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+            
+            // File upload handling
+            const fileUploadArea = document.getElementById('file-upload-area');
+            const fileInput = document.getElementById('campaign_file');
+            
+            if (fileUploadArea && fileInput) {
+                fileUploadArea.addEventListener('click', function() {
+                    fileInput.click();
+                });
+                
+                fileInput.addEventListener('change', function() {
+                    if (this.files.length > 0) {
+                        const fileName = this.files[0].name;
+                        const fileUploadText = fileUploadArea.querySelector('.file-upload-text');
+                        fileUploadText.textContent = `Selected file: ${fileName}`;
+                    }
+                });
+                
+                // Drag and drop
+                fileUploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#548662';
+                });
+                
+                fileUploadArea.addEventListener('dragleave', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#ced4da';
+                });
+                
+                fileUploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.style.borderColor = '#ced4da';
+                    
+                    if (e.dataTransfer.files.length > 0) {
+                        fileInput.files = e.dataTransfer.files;
+                        const fileName = e.dataTransfer.files[0].name;
+                        const fileUploadText = this.querySelector('.file-upload-text');
+                        fileUploadText.textContent = `Selected file: ${fileName}`;
+                    }
+                });
+            }
+        });
+        
+        function switchTab(tabId) {
+            // Update active tab
+            const tabs = document.querySelectorAll('.campaigns-tab');
+            tabs.forEach(tab => {
+                if (tab.getAttribute('data-tab') === tabId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+            
+            // Update active content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                if (content.id === tabId) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

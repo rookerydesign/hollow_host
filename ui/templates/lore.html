@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lore Journal - Hollow Host</title>
+    <title>Lore - Hollow Host</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        .lore-container {
+        .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
@@ -17,238 +18,130 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
+            border-bottom: 2px solid #548662;
+            padding-bottom: 1rem;
         }
         
         .page-header h1 {
             margin: 0;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
+            color: #548662;
+            font-size: 2.5rem;
         }
         
-        .lore-layout {
+        .button {
+            font-family: 'Cattedrale', sans-serif;
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #548662;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .button:hover {
+            background-color: #3e6349;
+        }
+        
+        .button-secondary {
+            background-color: #6c757d;
+        }
+        
+        .button-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 2rem;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            font-weight: bold;
+            color: #495057;
+            background-color: transparent;
+            transition: all 0.2s;
+        }
+        
+        .tab:hover {
+            color: #548662;
+            border-color: #dee2e6;
+        }
+        
+        .tab.active {
+            color: #548662;
+            background-color: #fff;
+            border-color: #dee2e6;
+            border-bottom-color: #fff;
+            margin-bottom: -1px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .two-column-layout {
             display: grid;
             grid-template-columns: 250px 1fr;
             gap: 1.5rem;
         }
         
-        .lore-sidebar {
+        .sidebar {
             background-color: white;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
         
-        .lore-sidebar h3 {
+        .sidebar h3 {
             margin-top: 0;
             margin-bottom: 1rem;
-            color: #2c3e50;
+            color: #548662;
             border-bottom: 2px solid #f0f0f0;
             padding-bottom: 0.5rem;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
         }
         
-        .lore-categories {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        
-        .lore-category {
-            margin-bottom: 0.5rem;
-        }
-        
-        .lore-category a {
-            display: block;
-            padding: 0.5rem;
-            color: #333;
-            text-decoration: none;
-            border-radius: 3px;
-            transition: background-color 0.2s;
-        }
-        
-        .lore-category a:hover,
-        .lore-category a.active {
-            background-color: #f0f0f0;
-        }
-        
-        .lore-category a.active {
-            font-weight: bold;
-            color: #3498db;
-        }
-        
-        .lore-search {
-            margin-bottom: 1.5rem;
-        }
-        
-        .lore-search input {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 3px;
-        }
-        
-        .lore-content {
+        .content-area {
             background-color: white;
             border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
         }
         
-        .lore-list {
+        .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .lore-item {
-            background-color: #f8f9fa;
-            border-radius: 3px;
-            padding: 1rem;
+        .card {
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
             transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .lore-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-        }
-        
-        .lore-item-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.5rem;
-        }
-        
-        .lore-item-title {
-            margin: 0;
-            font-size: 1.1rem;
-            color: #2c3e50;
-        }
-        
-        .lore-item-type {
-            font-size: 0.8rem;
-            color: #666;
-            background-color: #e9ecef;
-            padding: 0.2rem 0.4rem;
-            border-radius: 3px;
-        }
-        
-        .lore-item-description {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            max-height: 3.6rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-        }
-        
-        .lore-item-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.3rem;
-            margin-top: 0.5rem;
-        }
-        
-        .lore-tag {
-            font-size: 0.75rem;
-            background-color: #e1f5fe;
-            color: #0288d1;
-            padding: 0.1rem 0.4rem;
-            border-radius: 3px;
-        }
-        
-        .lore-detail {
-            display: none;
-        }
-        
-        .lore-detail.active {
-            display: block;
-        }
-        
-        .lore-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-        
-        .lore-detail-title {
-            margin: 0;
-            color: #2c3e50;
-        }
-        
-        .lore-detail-type {
-            font-size: 0.9rem;
-            color: #666;
-            background-color: #e9ecef;
-            padding: 0.3rem 0.6rem;
-            border-radius: 3px;
-        }
-        
-        .lore-detail-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-        
-        .lore-detail-description {
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-        
-        .lore-detail-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .lore-detail-section h3 {
-            margin-top: 0;
-            color: #2c3e50;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 0.5rem;
-        }
-        
-        .lore-detail-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-        
-        .lore-detail-tag {
-            font-size: 0.85rem;
-            background-color: #e1f5fe;
-            color: #0288d1;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-        }
-        
-        .lore-detail-relations {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .lore-relation {
-            font-size: 0.85rem;
-            background-color: #f0f0f0;
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .lore-relation:hover {
-            background-color: #e0e0e0;
-        }
-        
-        .lore-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.5rem;
-            margin-top: 2rem;
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
         .empty-state {
@@ -267,333 +160,206 @@
             color: #888;
             margin-bottom: 1.5rem;
         }
+        
+        @media (max-width: 768px) {
+            .two-column-layout {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="lore-container">
+    <div class="container">
         <div class="page-header">
-            <h1>Lore Journal</h1>
+            <h1>Lore</h1>
             <div class="action-buttons">
-                <a href="/lore/create" class="button">Add Entry</a>
-                <a href="/" class="button">Back to Home</a>
+                <a href="/" class="button button-secondary">Back to Home</a>
             </div>
         </div>
         
-        <div class="lore-layout">
-            <div class="lore-sidebar">
-                <div class="lore-search">
-                    <input type="text" id="lore-search" placeholder="Search lore...">
+        <div class="tabs">
+            <div class="tab active" data-tab="lore-journal">Lore Journal</div>
+            <div class="tab" data-tab="session-logs">Session Logs</div>
+            <div class="tab" data-tab="ruleset-browser">Ruleset Browser</div>
+            <div class="tab" data-tab="npc-archive">NPC Archive</div>
+        </div>
+        
+        <!-- Lore Journal Tab -->
+        <div class="tab-content active" id="lore-journal">
+            <div class="two-column-layout">
+                <div class="sidebar">
+                    <div class="search-box">
+                        <input type="text" id="lore-search" placeholder="Search lore...">
+                    </div>
+                    
+                    <h3>Categories</h3>
+                    <ul class="categories-list">
+                        <li><a href="#" class="active" data-category="all">All Entries</a></li>
+                        <li><a href="#" data-category="faction">Factions</a></li>
+                        <li><a href="#" data-category="npc">NPCs</a></li>
+                        <li><a href="#" data-category="place">Places</a></li>
+                        <li><a href="#" data-category="event">Events</a></li>
+                        <li><a href="#" data-category="fact">Facts</a></li>
+                        <li><a href="#" data-category="journal">Journal Entries</a></li>
+                    </ul>
                 </div>
                 
-                <h3>Categories</h3>
-                <ul class="lore-categories">
-                    <li class="lore-category">
-                        <a href="#" class="active" data-category="all">All Entries</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="faction">Factions</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="npc">NPCs</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="place">Places</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="event">Events</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="fact">Facts</a>
-                    </li>
-                    <li class="lore-category">
-                        <a href="#" data-category="journal">Journal Entries</a>
-                    </li>
-                </ul>
-                
-                <h3>Tags</h3>
-                <div class="lore-tags">
-                    {% for tag in tags %}
-                    <span class="lore-tag" data-tag="{{ tag }}">{{ tag }}</span>
-                    {% endfor %}
+                <div class="content-area">
+                    <div class="action-buttons" style="margin-bottom: 1rem;">
+                        <a href="/lore/create" class="button">Add Entry</a>
+                    </div>
+                    
+                    <div class="card-grid">
+                        <!-- Lore entries would be displayed here -->
+                        <div class="card">
+                            <h3>The Kingdom of Eldoria</h3>
+                            <span class="badge">Place</span>
+                            <p>A prosperous kingdom in the eastern lands, known for its magical academies and ancient libraries.</p>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>The Crimson Brotherhood</h3>
+                            <span class="badge">Faction</span>
+                            <p>A secretive organization dedicated to collecting and preserving magical artifacts.</p>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>The Battle of Silverkeep</h3>
+                            <span class="badge">Event</span>
+                            <p>A historic battle where the forces of light defeated the dark lord's army.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- Session Logs Tab -->
+        <div class="tab-content" id="session-logs">
+            <div class="two-column-layout">
+                <div class="sidebar">
+                    <h3>Recent Sessions</h3>
+                    <ul class="sessions-list">
+                        <li><a href="#" class="active">The Caves of Mystery</a></li>
+                        <li><a href="#">Journey to Eldoria</a></li>
+                        <li><a href="#">The Crimson Tower</a></li>
+                    </ul>
+                </div>
+                
+                <div class="content-area">
+                    <h2>The Caves of Mystery</h2>
+                    <div class="session-details">
+                        <div>
+                            <h4>Character</h4>
+                            <p>Thorne Ironheart</p>
+                        </div>
+                        
+                        <div>
+                            <h4>Date</h4>
+                            <p>April 15, 2025</p>
+                        </div>
+                    </div>
+                    
+                    <div class="session-history">
+                        <h3>Session History</h3>
+                        <div class="message-entry">
+                            <div class="player-message">
+                                <strong>Player:</strong>
+                                <p>I search the cave entrance for traps.</p>
+                            </div>
+                            
+                            <div class="dm-message">
+                                <strong>DM:</strong>
+                                <p>You carefully examine the entrance to the cave. The stone archway appears natural, but you notice small scratches in the ground that might indicate a pressure plate.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Ruleset Browser Tab -->
+        <div class="tab-content" id="ruleset-browser">
+            <div class="action-buttons" style="margin-bottom: 1rem;">
+                <a href="/ruleset-builder" class="button">Create Ruleset</a>
+                <a href="/upload-ruleset" class="button button-secondary">Upload Ruleset</a>
+            </div>
             
-            <div class="lore-content">
-                {% if lore_elements %}
-                <div class="lore-list">
-                    {% for element in lore_elements %}
-                    <div class="lore-item" data-id="{{ element.id }}" data-type="{{ element.lore_type }}">
-                        <div class="lore-item-header">
-                            <h3 class="lore-item-title">{{ element.name }}</h3>
-                            <span class="lore-item-type">{{ element.lore_type }}</span>
-                        </div>
-                        <div class="lore-item-description">{{ element.description }}</div>
-                        <div class="lore-item-tags">
-                            {% for tag in element.tags %}
-                            <span class="lore-tag">{{ tag }}</span>
-                            {% endfor %}
-                        </div>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Core Rules</h3>
+                    <span class="badge">v1.0</span>
+                    <p>The basic ruleset for Hollow Host campaigns.</p>
+                    <div class="card-actions">
+                        <a href="#" class="button button-secondary">View</a>
+                        <a href="#" class="button button-secondary">Download</a>
                     </div>
-                    {% endfor %}
                 </div>
                 
-                {% for element in lore_elements %}
-                <div class="lore-detail" id="lore-detail-{{ element.id }}">
-                    <div class="lore-detail-header">
-                        <h2 class="lore-detail-title">{{ element.name }}</h2>
-                        <span class="lore-detail-type">{{ element.lore_type }}</span>
-                    </div>
-                    
-                    <div class="lore-detail-meta">
-                        <span>Discovered: {{ element.discovery_timestamp|default('Unknown') }}</span>
-                    </div>
-                    
-                    <div class="lore-detail-description">{{ element.description }}</div>
-                    
-                    {% if element.lore_type == 'faction' %}
-                    <div class="lore-detail-section">
-                        <h3>Leadership & Members</h3>
-                        <p><strong>Leader:</strong> {{ element.leader|default('Unknown') }}</p>
-                        <p><strong>Members:</strong> {{ element.members|join(', ')|default('None known') }}</p>
-                        <p><strong>Alignment:</strong> {{ element.alignment|default('Neutral') }}</p>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Goals & Territories</h3>
-                        <p><strong>Goals:</strong></p>
-                        <ul>
-                            {% for goal in element.goals %}
-                            <li>{{ goal }}</li>
-                            {% else %}
-                            <li>No known goals</li>
-                            {% endfor %}
-                        </ul>
-                        <p><strong>Territories:</strong> {{ element.territories|join(', ')|default('None known') }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    {% if element.lore_type == 'npc' %}
-                    <div class="lore-detail-section">
-                        <h3>Character Information</h3>
-                        <p><strong>Faction:</strong> {{ element.faction_id|default('None') }}</p>
-                        <p><strong>Location:</strong> {{ element.location_id|default('Unknown') }}</p>
-                        <p><strong>Role:</strong> {{ element.role|default('Unknown') }}</p>
-                        <p><strong>Status:</strong> {{ 'Alive' if element.is_alive else 'Deceased' }}</p>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Appearance & Personality</h3>
-                        <p><strong>Appearance:</strong> {{ element.appearance|default('No description available') }}</p>
-                        <p><strong>Personality Traits:</strong></p>
-                        <ul>
-                            {% for trait in element.personality %}
-                            <li>{{ trait }}</li>
-                            {% else %}
-                            <li>No known traits</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    
-                    {% if element.lore_type == 'place' %}
-                    <div class="lore-detail-section">
-                        <h3>Location Information</h3>
-                        <p><strong>Region:</strong> {{ element.region|default('Unknown') }}</p>
-                        <p><strong>Controlling Faction:</strong> {{ element.controlling_faction|default('None') }}</p>
-                        <p><strong>Visited:</strong> {{ 'Yes' if element.visited else 'No' }}</p>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Points of Interest</h3>
-                        <ul>
-                            {% for poi in element.points_of_interest %}
-                            <li>{{ poi }}</li>
-                            {% else %}
-                            <li>No known points of interest</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Dangers & Resources</h3>
-                        <p><strong>Dangers:</strong></p>
-                        <ul>
-                            {% for danger in element.dangers %}
-                            <li>{{ danger }}</li>
-                            {% else %}
-                            <li>No known dangers</li>
-                            {% endfor %}
-                        </ul>
-                        <p><strong>Resources:</strong></p>
-                        <ul>
-                            {% for resource in element.resources %}
-                            <li>{{ resource }}</li>
-                            {% else %}
-                            <li>No known resources</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    
-                    {% if element.lore_type == 'event' %}
-                    <div class="lore-detail-section">
-                        <h3>Event Information</h3>
-                        <p><strong>Date:</strong> {{ element.date|default('Unknown') }}</p>
-                        <p><strong>Locations:</strong> {{ element.location_ids|join(', ')|default('Unknown') }}</p>
-                        <p><strong>Player Involved:</strong> {{ 'Yes' if element.player_involved else 'No' }}</p>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Participants & Consequences</h3>
-                        <p><strong>Participants:</strong></p>
-                        <ul>
-                            {% for participant in element.participants %}
-                            <li>{{ participant }}</li>
-                            {% else %}
-                            <li>No known participants</li>
-                            {% endfor %}
-                        </ul>
-                        <p><strong>Consequences:</strong></p>
-                        <ul>
-                            {% for consequence in element.consequences %}
-                            <li>{{ consequence }}</li>
-                            {% else %}
-                            <li>No known consequences</li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-                    {% endif %}
-                    
-                    {% if element.lore_type == 'fact' %}
-                    <div class="lore-detail-section">
-                        <h3>Fact Information</h3>
-                        <p><strong>Source:</strong> {{ element.source|default('Unknown') }}</p>
-                        <p><strong>Confidence:</strong> {{ element.confidence }}%</p>
-                        <p><strong>Truth Value:</strong> {{ 'True' if element.truth_value else 'False' }}</p>
-                    </div>
-                    {% endif %}
-                    
-                    {% if element.lore_type == 'journal' %}
-                    <div class="lore-detail-section">
-                        <h3>Journal Entry</h3>
-                        <p><strong>Date:</strong> {{ element.entry_date|default('Unknown') }}</p>
-                        <p><strong>Location:</strong> {{ element.location_id|default('Unknown') }}</p>
-                        <p><strong>Session:</strong> {{ element.session_id|default('Unknown') }}</p>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Narrative</h3>
-                        <div class="journal-narrative">{{ element.narrative_text }}</div>
-                    </div>
-                    
-                    <div class="lore-detail-section">
-                        <h3>Player Notes</h3>
-                        <div class="journal-notes">{{ element.player_notes }}</div>
-                    </div>
-                    {% endif %}
-                    
-                    <div class="lore-detail-section">
-                        <h3>Related Elements</h3>
-                        <div class="lore-detail-relations">
-                            {% for related in element.related_elements %}
-                            <span class="lore-relation" data-id="{{ related }}">{{ related }}</span>
-                            {% else %}
-                            <p>No related elements</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    
-                    <div class="lore-detail-tags">
-                        {% for tag in element.tags %}
-                        <span class="lore-detail-tag">{{ tag }}</span>
-                        {% endfor %}
-                    </div>
-                    
-                    <div class="lore-actions">
-                        <a href="/lore/edit/{{ element.id }}" class="button">Edit</a>
-                        <button class="button button-secondary lore-back-button">Back to List</button>
+                <div class="card">
+                    <h3>Fantasy Expansion</h3>
+                    <span class="badge">v0.8</span>
+                    <p>Additional rules for high fantasy campaigns.</p>
+                    <div class="card-actions">
+                        <a href="#" class="button button-secondary">View</a>
+                        <a href="#" class="button button-secondary">Download</a>
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- NPC Archive Tab -->
+        <div class="tab-content" id="npc-archive">
+            <div class="action-buttons" style="margin-bottom: 1rem;">
+                <a href="/lore/create?type=npc" class="button">Add NPC</a>
+            </div>
+            
+            <div class="card-grid">
+                <div class="card">
+                    <div class="npc-avatar">👑</div>
+                    <h3>King Aldric</h3>
+                    <p class="npc-role">Ruler of Eldoria</p>
+                    <p>A wise and just king who has ruled Eldoria for over three decades.</p>
+                </div>
                 
-                {% else %}
-                <div class="empty-state">
-                    <h2>No Lore Entries Found</h2>
-                    <p>Your lore journal is empty. Start adding entries to build your world's history and knowledge.</p>
-                    <a href="/lore/create" class="button">Add First Entry</a>
+                <div class="card">
+                    <div class="npc-avatar">🧙</div>
+                    <h3>Merlin the Wise</h3>
+                    <p class="npc-role">Court Wizard</p>
+                    <p>An ancient wizard with knowledge of forgotten magics.</p>
                 </div>
-                {% endif %}
+                
+                <div class="card">
+                    <div class="npc-avatar">🏹</div>
+                    <h3>Elara Swiftarrow</h3>
+                    <p class="npc-role">Ranger Captain</p>
+                    <p>Leader of the kingdom's elite ranger corps, known for her deadly accuracy.</p>
+                </div>
             </div>
         </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Lore item click handler
-            const loreItems = document.querySelectorAll('.lore-item');
-            const loreList = document.querySelector('.lore-list');
-            const loreDetails = document.querySelectorAll('.lore-detail');
-            const backButtons = document.querySelectorAll('.lore-back-button');
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
             
-            loreItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    loreList.style.display = 'none';
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabId = this.getAttribute('data-tab');
                     
-                    loreDetails.forEach(detail => {
-                        detail.classList.remove('active');
-                    });
-                    
-                    document.getElementById(`lore-detail-${id}`).classList.add('active');
-                });
-            });
-            
-            backButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    loreDetails.forEach(detail => {
-                        detail.classList.remove('active');
-                    });
-                    loreList.style.display = 'grid';
-                });
-            });
-            
-            // Category filter
-            const categoryLinks = document.querySelectorAll('.lore-category a');
-            
-            categoryLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    
-                    categoryLinks.forEach(l => l.classList.remove('active'));
+                    // Update active tab
+                    tabs.forEach(t => t.classList.remove('active'));
                     this.classList.add('active');
                     
-                    const category = this.getAttribute('data-category');
-                    
-                    loreItems.forEach(item => {
-                        if (category === 'all' || item.getAttribute('data-type') === category) {
-                            item.style.display = 'block';
+                    // Update active content
+                    const contents = document.querySelectorAll('.tab-content');
+                    contents.forEach(content => {
+                        if (content.id === tabId) {
+                            content.classList.add('active');
                         } else {
-                            item.style.display = 'none';
+                            content.classList.remove('active');
                         }
                     });
-                });
-            });
-            
-            // Search functionality
-            const searchInput = document.getElementById('lore-search');
-            
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                
-                loreItems.forEach(item => {
-                    const title = item.querySelector('.lore-item-title').textContent.toLowerCase();
-                    const description = item.querySelector('.lore-item-description').textContent.toLowerCase();
-                    
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
                 });
             });
         });

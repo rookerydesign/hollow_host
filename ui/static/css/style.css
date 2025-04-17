@@ -1,3 +1,24 @@
+/* Font Imports */
+@font-face {
+    font-family: 'bigfatgothic';
+    src: url('/static/fonts/Bigfatgothic-Regular.woff2') format('woff2'),
+         url('/static/fonts/Bigfatgothic-Regular.woff') format('woff'),
+         url('/static/fonts/Bigfatgothic-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Cattedrale';
+    src: url('/static/fonts/Cattedrale-Demo-Regular.woff2') format('woff2'),
+         url('/static/fonts/Cattedrale-Demo-Regular.woff') format('woff'),
+         url('/static/fonts/Cattedrale-Demo-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 /* Basic Reset */
 * {
     margin: 0;
@@ -6,10 +27,13 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f5f5f5;
+    background: url('/static/images/white_paper-_texture_overlay.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .container {
@@ -27,6 +51,9 @@ header {
 }
 
 header h1 {
+    font-family: 'bigfatgothic', sans-serif;
+    text-transform: lowercase;
+    color: #548662;
     margin-bottom: 0.5rem;
 }
 
@@ -114,8 +141,9 @@ main {
 }
 
 button {
+    font-family: 'Cattedrale', sans-serif;
     padding: 0.5rem 1rem;
-    background-color: #3498db;
+    background-color: #548662;
     color: white;
     border: none;
     border-radius: 3px;
@@ -123,7 +151,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #3e6349;
 }
 
 /* Sidebar */
@@ -390,7 +418,7 @@ button:hover {
 }
 
 .character-links li.active a {
-    color: #2c3e50;
+    color: #548662;
     font-weight: bold;
 }
 
@@ -405,7 +433,7 @@ button:hover {
 
 .character-links a:hover {
     background-color: #e0e0e0;
-    color: #2c3e50;
+    color: #548662;
 }
 
 .character-actions {
@@ -414,9 +442,10 @@ button:hover {
 }
 
 .button {
+    font-family: 'Cattedrale', sans-serif;
     display: inline-block;
     padding: 0.5rem 1rem;
-    background-color: #3498db;
+    background-color: #548662;
     color: white;
     text-decoration: none;
     border-radius: 3px;
@@ -424,7 +453,7 @@ button:hover {
 }
 
 .button:hover {
-    background-color: #2980b9;
+    background-color: #3e6349;
 }
 
 /* Character Sheet */

@@ -68,6 +68,11 @@ class WebUI:
         async def campaigns_page(request: Request):
             """Render the campaigns page."""
             return self.render_campaigns(request)
+            
+        @self.app.get("/characters", response_class=HTMLResponse)
+        async def characters_page(request: Request):
+            """Render the characters page."""
+            return self.render_characters(request)
         
         @self.app.get("/create-campaign", response_class=HTMLResponse)
         async def create_campaign_page(request: Request):
@@ -153,10 +158,11 @@ class WebUI:
             """End the current combat encounter."""
             return self.process_end_combat(request)
         
-        @self.app.get("/character", response_class=HTMLResponse)
-        async def character(request: Request):
-            """Render the character page."""
-            return self.render_character(request)
+        @self.app.get("/characters", response_class=HTMLResponse)
+        async def characters_redirect(request: Request):
+            """Redirect to characters page."""
+            from fastapi.responses import RedirectResponse
+            return RedirectResponse(url="/characters", status_code=301)
             
         @self.app.get("/character/{name}", response_class=HTMLResponse)
         async def character_detail(request: Request, name: str):
@@ -763,6 +769,29 @@ class WebUI:
                 "session": session or self.game_session,  # Use instance session if none provided
                 "messages": messages or [],
                 "characters": characters  # Add characters list for sidebar
+            }
+        )
+    
+    def render_characters(self, request: Request) -> HTMLResponse:
+        """
+        Render the characters page.
+        
+        Args:
+            request: FastAPI request object
+            
+        Returns:
+            HTML response
+        """
+        # Get list of available characters
+        from characters.builder import CharacterBuilder
+        builder = CharacterBuilder()
+        characters = builder.list_characters()
+        
+        return self.templates.TemplateResponse(
+            "characters.html",
+            {
+                "request": request,
+                "characters": characters
             }
         )
     

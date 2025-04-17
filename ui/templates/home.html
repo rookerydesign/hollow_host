@@ -5,85 +5,226 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hollow Host - Home</title>
     <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         /* Additional styles for home screen */
         .home-container {
-            max-width: 1200px;
+            max-width: 1440px;
             margin: 0 auto;
             padding: 2rem;
         }
         
         .welcome-banner {
             text-align: center;
-            margin-bottom: 2rem;
-            padding: 2rem;
-            background-color: #2c3e50;
+            margin-bottom: 0;
+            padding: 1rem;
+            background-color: transparent;
             color: white;
-            border-radius: 5px;
+            position: relative;
         }
         
         .welcome-banner h1 {
-            font-size: 2.5rem;
+            font-size: 9rem;
             margin-bottom: 1rem;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
+            color: #548662;
+            letter-spacing: 0.1em;
         }
         
         .welcome-banner p {
-            font-size: 1.2rem;
+            font-size: small;
+            color:#333;
             max-width: 800px;
-            margin: 0 auto;
+            margin: -2.5rem auto 0.5rem;
         }
         
+        /* .welcome-banner::after {
+            content: '*';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            opacity: 0.3;
+        } */
+        /* Cards for menu on front page */
         .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            min-height: 500px; 
+            display: flex;
+            /* grid-template-columns: repeat(3, 1fr); */
+            justify-content: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            background: url('/static/images/card_div_bg.png');
+            background-size: cover;
+            max-width: 100%;
+            margin: 0 auto 1.5rem  ;
+            padding: 0.5rem 0 2rem;
         }
         
         .feature-card {
-            background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            
+            /* border-radius: 5px; */
+            /* box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1); */
+            position: relative;
+            width: 284px;
+            height: 466px; /* set exact card height */
+            aspect-ratio: 3 / 4;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: none !important;
+            transition: transform 0.2s ease;      
         }
         
         .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: scale(1.03);
+            box-shadow: none !important;
+        }
+        
+        .feature-card-image {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        .feature-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .feature-card:hover .feature-card-image img {
+            transform: scale(1.05);
+        }
+        
+        .feature-card-content {
+            position: relative;
+            z-index: 2;
+            padding-bottom: 2.5rem;
+            padding-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .feature-card h3 {
             margin-top: 0;
-            margin-bottom: 1rem;
-            color: #2c3e50;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+            color: #548662;
+            font-size: 1.5rem;
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
         }
         
         .feature-card p {
-            color: #666;
-            margin-bottom: 1.5rem;
+            color: #e7e7e7;
+            margin-bottom: 2.2rem;
+            font-size: small;
+            padding: 0 3.8rem;
         }
-        
-        .feature-card .button-container {
-            display: flex;
-            justify-content: flex-end;
+        .feature-card:first-child p {
+            margin-left: 2.5rem;
+        }
+        .feature-card:last-child p {
+            margin-right: 2.5rem;
         }
         
         .feature-card .button {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background-color: #3498db;
+            font-family: 'cattedrale', sans-serif;
+            font-size: 1rem;
             color: white;
+            background-color: black;
+            padding: 0.6rem 1.2rem;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
             text-decoration: none;
-            border-radius: 3px;
-            transition: background-color 0.2s;
+            display: inline-block;
+            margin-top: 0.5rem;
+            margin-bottom: -3.5rem;
+            box-shadow: none;
+            border: none;
+            transition: background-color 0.2s ease-in-out;
         }
         
         .feature-card .button:hover {
-            background-color: #2980b9;
+            background-color: #548662;
+            color: white;
         }
+        
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+         /* background: linear-gradient(to bottom, rgba(0,0,0,0) 70%, rgba(0,0,0,0.7) 100%); */
+            z-index: 1;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .feature-card-title {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            z-index: 2;
+            font-size: 1.8rem;
+            font-weight: bold;
+            /* text-shadow: 0 2px 4px rgba(0,0,0,0.5); */
+            font-family: 'bigfatgothic', sans-serif;
+            text-transform: lowercase;
+        }
+        .feature-card:first-child .button {
+            margin-left: 30px; /* pushes the button toward center */
+        }
+        .feature-card:last-child .button {
+            margin-right: 30px; /* pushes the button toward center */
+        }
+        .geometric-accent {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        /* .accent-1 {
+            top: 10%;
+            left: 5%;
+            border: 2px solid #548662;
+            border-radius: 50%;
+        }
+        
+        .accent-2 {
+            bottom: 15%;
+            right: 8%;
+            border: 2px solid #548662;
+            transform: rotate(45deg);
+        }
+        
+        .accent-3 {
+            top: 20%;
+            right: 15%;
+            width: 50px;
+            height: 50px;
+            background-color: #548662;
+            border-radius: 50%;
+        } */
         
         .dev-mode-section {
             margin-top: 2rem;
@@ -122,63 +263,57 @@
             color: #666;
             margin-bottom: 1rem;
         }
+        
+        @media (max-width: 768px) {
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="home-container">
         <div class="welcome-banner">
-            <h1>Welcome to Hollow Host</h1>
-            <p>Your AI-powered tabletop RPG companion. Create campaigns, manage characters, and embark on epic adventures.</p>
+            <h1>hollow host</h1>
+            <p>Your AI-powered tabletop RPG companion. Create campaigns, manage characters and embark on epic adventures.</p>
+            <!-- <div class="geometric-accent accent-1"></div>
+            <div class="geometric-accent accent-2"></div>
+            <div class="geometric-accent accent-3"></div> -->
         </div>
         
         <div class="feature-grid">
-            <div class="feature-card">
-                <h3>Resume Campaign</h3>
-                <p>Continue your adventure where you left off.</p>
-                <div class="button-container">
-                    <a href="/campaigns" class="button">View Campaigns</a>
+            <a href="/characters" class="feature-card">
+                <div class="feature-card-image">
+                    <img src="/static/images/character_card_trans_front_pg.png" alt="Character" > 
                 </div>
-            </div>
+                <!-- <div class="feature-card-title">CHARACTERS</div> -->
+                <div class="feature-card-content">
+                    <p>View and manage your character collection</p>
+                    <span class="button">CHARACTERS</span>
+                </div>
+            </a>
             
-            <div class="feature-card">
-                <h3>Create Campaign</h3>
-                <p>Start a new adventure with a fresh campaign.</p>
-                <div class="button-container">
-                    <a href="/create-campaign" class="button">Create New</a>
+            <a href="/campaigns" class="feature-card">
+                <div class="feature-card-image">
+                    <img src="/static/images/campaign_card_trans_front_pg.png" alt="Campaigns"> 
                 </div>
-            </div>
+                <!-- <div class="feature-card-title">CAMPAIGNS</div> -->
+                <div class="feature-card-content">
+                    <p>Continue your campaign or create a new one</p>
+                    <span class="button">CAMPAIGNS</span>
+                </div>
+            </a>
             
-            <div class="feature-card">
-                <h3>Import Campaign</h3>
-                <p>Import an existing campaign from a file.</p>
-                <div class="button-container">
-                    <a href="/import-campaign" class="button">Import</a>
+            <a href="/lore" class="feature-card">
+                <div class="feature-card-image">
+                    <img src="/static/images/lore_card_trans_front_pg.png" alt="Lore">
                 </div>
-            </div>
-            
-            <div class="feature-card">
-                <h3>Character Roster</h3>
-                <p>View and manage your character collection.</p>
-                <div class="button-container">
-                    <a href="/character" class="button">View Characters</a>
+                <!-- <div class="feature-card-title">LORE</div> -->
+                <div class="feature-card-content">
+                    <p>Browse, edit or upload lore for your campaigns</p>
+                    <span class="button">LORE</span>
                 </div>
-            </div>
-            
-            <div class="feature-card">
-                <h3>Lore Journal</h3>
-                <p>Browse and edit your campaign's lore entries.</p>
-                <div class="button-container">
-                    <a href="/lore" class="button">Open Journal</a>
-                </div>
-            </div>
-            
-            <div class="feature-card">
-                <h3>Session Logs</h3>
-                <p>Review logs from your previous game sessions.</p>
-                <div class="button-container">
-                    <a href="/sessions" class="button">View Logs</a>
-                </div>
-            </div>
+            </a>
         </div>
         
         {% if dev_mode %}
